@@ -1,21 +1,3 @@
-export interface User {
-  id: number;
-  username: string;
-  name: string;
-  email: string;
-  role: string;
-};
-
-export interface UserInfo {
-  id: number;
-  username: string;
-  nickname: string;
-  point: number;
-  exp: number;
-  level: number;
-  imageUrl: string;
-};
-
 export interface ICommunity {
   content: {
     id: number;

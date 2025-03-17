@@ -28,7 +28,7 @@ const SImage = styled.img`
 
 const SButton = styled.button``;
 
-interface ISearchForm {
+type ISearchForm = {
     onSendSearch: (search: string) => void;
 }
 

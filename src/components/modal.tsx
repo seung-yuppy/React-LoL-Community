@@ -30,15 +30,15 @@ const ModalContent = styled.div`
 
 const CloseButton = styled.button`
     color: #fff;
-    background-color: crimson;
-    border: crimson;
+    background-color: #10a37f;
+    border: #10a37f;
     padding: 0.7rem 2rem;
     font-size: 1.2rem;
     border-radius:0.5rem;
     cursor: pointer;
 `;
 
-interface IModal {
+type IModal = {
     children: React.ReactNode;
     onClick: () => void;
 }

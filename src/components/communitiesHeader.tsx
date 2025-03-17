@@ -2,6 +2,7 @@ import styled from "styled-components";
 import ico_write from "../assets/images/ico_write.svg"
 import { Link } from "react-router-dom";
 import SearchForm from "./searchForm";
+import useAuth from "../stores/useAuth";
 
 const HeaderContainer = styled.div`
     display: flex;
@@ -35,32 +36,36 @@ const FilterBtnContainer = styled.div`
 `;
 
 const FilterBtn = styled.button`
-  font-size: 1.2rem;
-  color: #333;
-  cursor: pointer;
+    font-size: 1.2rem;
+    color: #333;
+    cursor: pointer;
 
-  &:hover {
-    color: steelblue;
-  }
+    &:hover {
+        color: steelblue;
+    }
 `;
 
-interface ICommunitiesHeader {
+type ICommunitiesHeader = {
     handleRecent: () => void;
     handlePopularity: () => void;
     handleSearchForm: (search: string) => void;
 }
 
 const CommunitiesHeader = ({ handleRecent, handlePopularity, handleSearchForm }: ICommunitiesHeader) => {
+    const { isLogin } = useAuth();
+
     return (
         <>
             <HeaderContainer>
                 <WriteBtnBox>
-                    <Link to={"/community/write"}><WriteImage src={ico_write} alt="이미지 없음" /></Link>
+                    {isLogin && <Link to={"/community/write"}><WriteImage src={ico_write} alt="이미지 없음" /></Link>}
                 </WriteBtnBox>
                 <TableHeader>
                     <FilterBtnContainer>
                         <FilterBtn onClick={handleRecent}>최신</FilterBtn>
                         <FilterBtn onClick={handlePopularity}>10추</FilterBtn>
+                        <FilterBtn>인기</FilterBtn>
+                        <FilterBtn>TOP</FilterBtn>
                     </FilterBtnContainer>
                     <SearchForm onSendSearch={handleSearchForm} />
                 </TableHeader>

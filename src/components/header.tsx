@@ -20,6 +20,7 @@ const Item = styled.li`
   font-size: 1rem;
   color: #fff;
   transition: all 0.5s;
+  cursor: pointer;
 
   &:hover {
     color: #8a6d3b;
@@ -49,24 +50,41 @@ const Header = () => {
         if (!response.ok) {
           throw new Error("Unauthorized");
         }
-        await response.json();
-
+        await response.json();  // 로그인과 로그아웃 처리를 위해 반드시 필요함(유저정보)
         login();
       } catch (error) {
         console.error("로그아웃", error);
         logout();
       }
     };
-
     fetchAuth();
   }, [isLogin, login, logout]);
+
+  // 로그아웃
+  const onLogout = async () => {
+    await fetch(`http://localhost:8080/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+    logout();
+  };
 
   return (
     <>
       <Gnb>
         <Itemlist>
           <Item><Link to="/">HOME</Link></Item>
-          {!isLogin ? <Item><Link to="/login">LOG IN</Link></Item> : <Item><Link to="/mypage">MY PAGE</Link></Item>}
+          {!isLogin ?
+            <Item>
+              <Link to="/login">LOG IN</Link>
+            </Item> :
+            <>
+              <Item>
+                <Link to="/mypage">MY PAGE</Link>
+              </Item>
+              <Item onClick={onLogout}>LOG OUT</Item>
+            </>
+          }
         </Itemlist>
       </Gnb >
       <HomeTitle>Welcome LoL Commnuity</HomeTitle>

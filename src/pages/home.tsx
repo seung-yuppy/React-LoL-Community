@@ -1,5 +1,5 @@
 import styled from "styled-components";
-// import Chat from "../components/chat";
+import Chat from "../components/chat";
 import Communities from "../components/communities";
 import SideMenu from "../components/sideMenu";
 
@@ -17,7 +17,7 @@ const Home = () => {
             <Wrapper>
                 <SideMenu />
                 <Communities />
-                {/* <Chat /> */}
+                <Chat />
             </Wrapper >
         </>
     );

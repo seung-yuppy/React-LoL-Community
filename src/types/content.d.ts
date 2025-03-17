@@ -1,4 +1,4 @@
-interface IContent {
+type IContent = {
     id: number;
     nickname: string;
     title: string;
@@ -8,6 +8,6 @@ interface IContent {
     viewsCount: number;
     likesCount: number;
     commentsCount: number;
-}
+};
 
 export default IContent;

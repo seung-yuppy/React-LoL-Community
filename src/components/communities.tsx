@@ -12,7 +12,7 @@ const Wrapper = styled.div`
     flex-direction: column;
     gap: 1rem;
     height: 50rem;
-    width: 50rem;
+    width: 60rem;
 `;
 
 const MainContainer = styled.div`
@@ -74,16 +74,16 @@ const LikeButton = styled.button`
 `;
 
 const SearchImage = styled.img`
-    cursor: pointer;
     width: 1.2rem;
     object-fit: cover;
 `;
 
-
 const Communities = () => {
     const { isLogin } = useAuth();  // 로그인 상태 관리
     const [communityList, setCommunityList] = useState<IContent[]>([]); // 커뮤니티 리스트 상태 관리
-    const [showModal, setShowModal] = useState<boolean>(false); // 모달 상태 관리
+    const [showAlertModal, setShowAlertModal] = useState<boolean>(false); // 로그인 경고창 모달 상태 관리
+    const [showLikeModal, setShowLikeModal] = useState<boolean>(false); // 좋아요 경고창 모달 상태 관리
+    const [showDupLikeModal, setShowDupLikeModal] = useState<boolean>(false); // 이미 좋아요 누른 경고창 모달 상태 관리
 
     useEffect(() => {
         const fetchData = async () => {
@@ -98,9 +98,8 @@ const Communities = () => {
                 console.error("커뮤니티 리스트 불러오기 오류", error);
             }
         };
-
         fetchData();
-    }, [showModal]);
+    }, [showAlertModal]);
 
     // 좋아요 버튼 누르기
     const addLike = async (id: number) => {
@@ -110,17 +109,21 @@ const Communities = () => {
                 credentials: "include",
             })
             const data = await res.text();
-            alert(data);
+            if (data === "이미 좋아요를 누르셨습니다.") {
+                setShowDupLikeModal(true);
+            } else {
+                setShowLikeModal(true);
+            }
         } catch (error) {
             console.error("좋아요 실패", error);
+
         }
     };
 
     // 최신순으로 정렬
     const handleRecent = async () => {
         if (!isLogin) {
-            setShowModal(true);
-            return;
+            setShowAlertModal(true);
         } else {
             try {
                 const response = await fetch(`http://localhost:8080/community`, { method: "GET", credentials: "include" });
@@ -138,8 +141,7 @@ const Communities = () => {
     // 10개 이상 좋아요 정렬
     const handlePopularity = async () => {
         if (!isLogin) {
-            setShowModal(true);
-            return;
+            setShowAlertModal(true);
         } else {
             try {
                 const response = await fetch(`http://localhost:8080/community/popularity`, {
@@ -157,8 +159,7 @@ const Communities = () => {
     // 검색 폼 처리
     const handleSearchForm = async (search: string) => {
         if (!isLogin) {
-            setShowModal(true);
-            return;
+            setShowAlertModal(true);
         } else {
             try {
                 const response = await fetch(`http://localhost:8080/community/search/${search}`, {
@@ -176,9 +177,19 @@ const Communities = () => {
     return (
         <>
             <Wrapper>
-                {showModal &&
-                    <Modal onClick={() => setShowModal(false)}>
+                {showAlertModal &&
+                    <Modal onClick={() => setShowAlertModal(false)}>
                         <TableTitle>로그인 후 이용해주세요</TableTitle>
+                    </Modal>
+                }
+                {showLikeModal &&
+                    <Modal onClick={() => setShowLikeModal(false)}>
+                        <TableTitle>이 글을 좋아합니다.❤️</TableTitle>
+                    </Modal>
+                }
+                {showDupLikeModal &&
+                    <Modal onClick={() => setShowDupLikeModal(false)}>
+                        <TableTitle>이 글을 이미 좋아했습니다.</TableTitle>
                     </Modal>
                 }
                 <CommunitiesHeader handleRecent={handleRecent} handlePopularity={handlePopularity} handleSearchForm={handleSearchForm} />
