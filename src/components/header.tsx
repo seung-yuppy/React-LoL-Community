@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import img from "../assets/images/lol.png"
 import useAuth from "../stores/useAuth";
@@ -39,6 +39,7 @@ const HomeTitle = styled.div`
 
 const Header = () => {
   const { isLogin, login, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAuth = async () => {
@@ -67,6 +68,7 @@ const Header = () => {
       credentials: "include",
     });
     logout();
+    navigate("/");
   };
 
   return (

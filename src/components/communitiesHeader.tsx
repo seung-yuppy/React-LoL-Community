@@ -52,13 +52,13 @@ type ICommunitiesHeader = {
 }
 
 const CommunitiesHeader = ({ handleRecent, handlePopularity, handleSearchForm }: ICommunitiesHeader) => {
-    const { isLogin } = useAuth();
+    const { isLogin, userInfo } = useAuth();
 
     return (
         <>
             <HeaderContainer>
                 <WriteBtnBox>
-                    {isLogin && <Link to={"/community/write"}><WriteImage src={ico_write} alt="이미지 없음" /></Link>}
+                    {isLogin && userInfo && <Link to={"/community/write"}><WriteImage src={ico_write} alt="이미지 없음" /></Link>}
                 </WriteBtnBox>
                 <TableHeader>
                     <FilterBtnContainer>

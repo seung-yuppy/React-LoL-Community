@@ -14,6 +14,7 @@ const Wrapper = styled.div`
   height: 50rem;
   width: 25rem;
   padding: 1rem;
+  padding-bottom: 0;
 `;
 
 const FormWrapper = styled.form`

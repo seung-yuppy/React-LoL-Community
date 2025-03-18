@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useAuth from "../stores/useAuth";
 import IUser from "../types/user";
@@ -7,72 +7,72 @@ import Modal from "../components/modal";
 import IUserInfo from "../types/userInfo";
 
 const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 `;
 
 const Title = styled.h2`
-  font-size: 2.3rem;
-  margin-top: 3rem;
+    font-size: 2.3rem;
+    margin-top: 3rem;
 `;
 
 const Container = styled.div`
-  display: flex;
-  gap: 3rem;
+    display: flex;
+    gap: 3rem;
 `;
 
 const EmailBox = styled.fieldset`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  border: 1px solid gray;
-  padding: 1.5rem 3rem;
-  border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    border: 1px solid gray;
+    padding: 1.5rem 3rem;
+    border-radius: 1rem;
 `;
 
 const EmailLegend = styled.legend``;
 
 const InfoBox = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  font-size: 1.5rem;
-  gap: 1.5rem;
-  padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-size: 1.5rem;
+    gap: 1.5rem;
+    padding: 2rem;
 `;
 
 const Info = styled.h1`
-  font-size: 1.5rem;
+    font-size: 1.5rem;
 `;
 
 const ButtonContainer = styled.div`
-  display: flex;
-  gap: 2rem;
-  padding: 1rem;
+    display: flex;
+    gap: 2rem;
+    padding: 1rem;
 `;
 
 const SelectButton = styled.button`
-  padding: 1rem;
-  width: 15rem;
-  border-radius: 1rem;
-  color: #fff;
-  font-size: 1.2rem;
-  background-color: #08ccac;
-  border: 1px solid #08ccac;
-  cursor: pointer;
+    padding: 1rem;
+    width: 15rem;
+    border-radius: 1rem;
+    color: #fff;
+    font-size: 1.2rem;
+    background-color: #08ccac;
+    border: 1px solid #08ccac;
+    cursor: pointer;
 `;
 
 const LogoutButton = styled(SelectButton)`
-  background-color: crimson;
-  border: 1px solid crimson;
+    background-color: crimson;
+    border: 1px solid crimson;
 `;
 
 const ImgItem = styled.img`
-  width: 20rem;
-  height: 10rem;
-  object-fit: contain;
+    width: 20rem;
+    height: 10rem;
+    object-fit: contain;
 `;
 
 const ModalDelButton = styled.button`
@@ -117,8 +117,8 @@ const MyPage = () => {
           method: "GET",
           credentials: "include",
         });
-        const data = await response.json();
-        setUserInfo(data);
+        const infoData = await response.json();
+        setUserInfo(infoData);
       } catch (error) {
         console.error("유저 상세 정보 불러오기 실패", error);
       }
@@ -127,15 +127,10 @@ const MyPage = () => {
     fetchUserInfo();
   }, []);
 
-  // 닉네임 정하기(초기유저 전용)
-  const gotoUserInfo = () => {
-    navigate("/mypage/nickname");
-  };
-
   // 탈퇴 버튼 누르면 모달창 생성
   const handleDelModal = () => {
     setShowRemoveModal(true);
-  }
+  };
 
   // 탈퇴 처리(닉네임&myteam 생성 유저 전용)
   const handleDelete = async () => {
@@ -149,16 +144,6 @@ const MyPage = () => {
     });
     logout();
     navigate("/login");
-  };
-
-  // 닉네임 변경(닉네임&myteam 생성 유저 전용)
-  const gotoNickNameEdit = () => {
-    navigate("/mypage/edit/nickname");
-  };
-
-  // 팀 이미지 변경(닉네임&myteam 생성 유저 전용)
-  const gotoImageEdit = () => {
-    navigate("/mypage/edit/image")
   };
 
   return (
@@ -196,12 +181,11 @@ const MyPage = () => {
         </InfoBox>
       </Container>
       <ButtonContainer>
-        {!userInfo && <SelectButton onClick={gotoUserInfo}>닉네임 정하기</SelectButton>}
-        {userInfo && <SelectButton onClick={gotoNickNameEdit}>닉네임 수정하기</SelectButton>}
-        {userInfo && <SelectButton onClick={gotoImageEdit}>이미지 수정하기</SelectButton>}
+        {!userInfo && <Link to={'/mypage/userinfo'}><SelectButton>닉네임 정하기</SelectButton></Link>}
+        {userInfo && <Link to={'/mypage/edit/nickname'}><SelectButton>닉네임 수정하기</SelectButton></Link>}
+        {userInfo && <Link to={'/mypage/edit/image'}><SelectButton>이미지 수정하기</SelectButton></Link>}
         {(user && userInfo) && <LogoutButton onClick={handleDelModal}>탈퇴하기</LogoutButton>}
       </ButtonContainer>
-
     </Wrapper >
   );
 }

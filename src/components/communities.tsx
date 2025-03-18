@@ -24,7 +24,6 @@ const MainContainer = styled.div`
     border: 1px solid #333;
     padding: 1rem 2rem;
     border-radius: 1rem;
-
 `;
 
 const TableBox = styled.ul`
@@ -32,7 +31,6 @@ const TableBox = styled.ul`
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    
 `;
 
 const TableBody = styled.li`
@@ -99,7 +97,7 @@ const Communities = () => {
             }
         };
         fetchData();
-    }, [showAlertModal]);
+    }, []);
 
     // 좋아요 버튼 누르기
     const addLike = async (id: number) => {

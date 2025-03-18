@@ -66,7 +66,7 @@ const Btn = styled.button`
   background-color: #08ccac;
   color: #fff;
   border-radius: 1rem;
-  padding: 1.3rem;
+  padding: 1rem;
   font-size: 1.3rem;
   border: 1px solid #08ccac;
   cursor: pointer;
@@ -94,7 +94,7 @@ const SelectWrapper = styled.div`
   margin-bottom: 1rem;
 `;
 
-function SelectNickName() {
+function SelectUserInfo() {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
   const [teamImg, setTeamImg] = useState<ITeamImage[]>([]);
@@ -198,4 +198,4 @@ function SelectNickName() {
   );
 }
 
-export default SelectNickName;
+export default SelectUserInfo;

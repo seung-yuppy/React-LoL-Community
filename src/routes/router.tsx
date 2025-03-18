@@ -5,8 +5,8 @@ import App from "../App";
 import ErrorComponent from "../components/errorComponent";
 import ErrorPage from "../pages/errorPage";
 import MyPage from "../pages/mypage";
-import SelectNickName from "../pages/selectNickName";
-import CommunityWrite from "../pages/CommunityWrite";
+import SelectNickName from "../pages/selectUserInfo";
+import CommunityWrite from "../pages/communityWrite";
 
 const Router = createBrowserRouter([
     {
@@ -29,7 +29,7 @@ const Router = createBrowserRouter([
                 errorElement: <ErrorComponent />
             },
             {
-                path: "mypage/nickname",
+                path: "mypage/userinfo",
                 element: <SelectNickName />,
                 errorElement: <ErrorComponent />
             },
