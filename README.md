@@ -9,6 +9,8 @@
 |빌드도구|Webpack|Vite|
 |React Version|18|19|
 |React-Router Version|6|7|
+|@ckeditor/ckeditor5-build-classic|43.0.0|44.3.0|
+
 
 ### 📍 사용 라이브러리
 |라이브러리명|설명|
