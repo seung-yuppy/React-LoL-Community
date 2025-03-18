@@ -28,6 +28,7 @@ const TableBox = styled.ul`
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    overflow-y: scroll;
 `;
 
 const TableBody = styled.li`
@@ -91,7 +92,7 @@ const Communities = ({ communityList, addLike }: CommunitiesProps) => {
                         <TableTitle>게시글이 없습니다.</TableTitle>
                     ) : (
                         <TableBox>
-                            {communityList.slice(0, 10).map((community) => (
+                            {communityList.slice(0, 20).map((community) => (
                                 <TableBody key={community.id}>
                                     <TableBodytd>
                                         <SearchImage src={ico_up} alt="이미지 없음" />

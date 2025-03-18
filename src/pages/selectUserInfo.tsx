@@ -8,6 +8,10 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 50rem;
+  width: 60rem;
+  border: 1px solid #333;
+  border-radius: 1rem;
 `;
 
 const Title = styled.span`
@@ -103,10 +107,6 @@ function SelectUserInfo() {
   const [showDupModal, setShowDupModal] = useState<boolean>(false); // 중복 경고 모달 상태 관리
   const [showComModal, setShowComModal] = useState<boolean>(false); // 닉네임 완료 모달 상태 관리
 
-  const selectId = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setMyteamId(e.target.value);
-  };
-
   useEffect(() => {
     (async () => {
       const response = await fetch(`http://localhost:8080/image/list`, {
@@ -129,24 +129,29 @@ function SelectUserInfo() {
 
   const writeNickname = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const imageUrl = myTeam?.imageUrl;
-    const response = await fetch(`http://localhost:8080/check/${nickname}`, {
-      method: "GET",
-      credentials: "include",
-    });
-    const status = response.status;
-    if (status === 409) {
-      setShowDupModal(true);
-    } else if (status === 200) {
-      setShowComModal(true);
-      await fetch(`http://localhost:8080/info`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nickname, imageUrl }),
+    try {
+      const imageUrl = myTeam?.imageUrl;
+      const response = await fetch(`http://localhost:8080/check/${nickname}`, {
+        method: "GET",
         credentials: "include",
       });
+      const status = response.status;
+      if (status === 409) {
+        setShowDupModal(true);
+      } else if (status === 200) {
+        await fetch(`http://localhost:8080/info`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ nickname, imageUrl }),
+          credentials: "include",
+        });
+        setShowComModal(true);
+        // userInfo가 서버에 들어간걸 클라이언트에 인식하기 위해 새로고침 필요
+      }
+    } catch (error) {
+      console.error("닉네임 또는 팀 설정 실패", error);
     }
   };
 
@@ -154,16 +159,6 @@ function SelectUserInfo() {
     <>
       <Wrapper>
         <Title>닉네임 & 응원팀 정하기</Title>
-        {showDupModal &&
-          <Modal onClick={() => setShowDupModal(false)}>
-            <Title>중복된 닉네임 입니다. 다시 닉네임을 입력해주세요.</Title>
-          </Modal>
-        }
-        {showComModal &&
-          <Modal onClick={() => { setShowComModal(false); navigate("/mypage") }}>
-            <Title>{nickname}님 가입을 축하드립니다!</Title>
-          </Modal>
-        }
         <FormWrapper onSubmit={writeNickname}>
           <SelectWrapper>
             <InputWrapper>
@@ -180,7 +175,7 @@ function SelectUserInfo() {
                 {myTeam && (
                   <LogImg src={myTeam.imageUrl} />
                 )}
-                <SelectImg onChange={selectId}>
+                <SelectImg onChange={(e) => setMyteamId(e.target.value)}>
                   <SelectOption value="">팀을 선택해주세요</SelectOption>
                   {[...teamImg].map((img) => (
                     <SelectOption key={img.id} value={img.id}>
@@ -194,6 +189,20 @@ function SelectUserInfo() {
           <Btn type="submit">등록하기</Btn>
         </FormWrapper>
       </Wrapper >
+
+      {/* 모달 관리 */}
+      {
+        showDupModal &&
+        <Modal onClick={() => setShowDupModal(false)}>
+          <Title>중복된 닉네임 입니다. 다시 닉네임을 입력해주세요.</Title>
+        </Modal>
+      }
+      {
+        showComModal &&
+        <Modal onClick={() => { setShowComModal(false); navigate("/mypage"); window.location.reload(); }}>
+          <Title>{nickname}님 가입을 축하드립니다!</Title>
+        </Modal>
+      }
     </>
   );
 }

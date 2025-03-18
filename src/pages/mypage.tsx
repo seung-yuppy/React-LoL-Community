@@ -11,6 +11,7 @@ const Wrapper = styled.div`
     flex-direction: column;
     align-items: center;
     height: 50rem;
+    width: 60rem;
     border: 1px solid #333;
     border-radius: 1rem;
 `;
@@ -112,7 +113,6 @@ const MyPage = () => {
         console.error("로그인 후 기본 유저 정보 불러오기 실패", error);
       }
     };
-
     // 유저 상세 정보 불러오기(닉네임 생성 & myTeam 생성 이후)
     const fetchUserInfo = async () => {
       try {
@@ -146,7 +146,7 @@ const MyPage = () => {
       credentials: "include",
     });
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   return (
