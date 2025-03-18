@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import img from "../assets/images/lol.png"
 import useAuth from "../stores/useAuth";
+import Modal from "./modal";
+import LoginForm from "./loginForm";
 
 const Gnb = styled.nav`
   padding:1rem 2rem;
@@ -40,6 +42,7 @@ const HomeTitle = styled.div`
 const Header = () => {
   const { isLogin, login, logout } = useAuth();
   const navigate = useNavigate();
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(false); // 로그인 모달 상태 관리
 
   useEffect(() => {
     const fetchAuth = async () => {
@@ -77,8 +80,8 @@ const Header = () => {
         <Itemlist>
           <Item><Link to="/">HOME</Link></Item>
           {!isLogin ?
-            <Item>
-              <Link to="/login">LOG IN</Link>
+            <Item onClick={() => setShowLoginModal(true)}>
+              LOG IN
             </Item> :
             <>
               <Item>
@@ -90,6 +93,13 @@ const Header = () => {
         </Itemlist>
       </Gnb >
       <HomeTitle>Welcome LoL Commnuity</HomeTitle>
+
+      {/* 모달 관리 */}
+      {showLoginModal &&
+        <Modal onClick={() => setShowLoginModal(false)}>
+          <LoginForm />
+        </Modal>
+      }
     </>
   );
 }

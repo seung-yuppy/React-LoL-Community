@@ -8,16 +8,16 @@ import Modal from "../components/modal";
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   padding: 2rem;
+  height: 50rem;
+  border: 1px solid #333;
+  border-radius: 1rem;
 `;
 
 const MainContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
+  flex-direction: column;
   gap: 2rem;
 `;
 

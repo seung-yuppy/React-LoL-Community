@@ -142,30 +142,35 @@ const Chat = () => {
   };
 
   return (
-    <Wrapper>
+    <>
+      <Wrapper>
+        <ChatBox>
+          <InfoBox>실시간 채팅</InfoBox>
+          {messages.map((msg) => (
+            <ChatItem key={msg.nickname}>
+              {msg.nickname} : {msg.content}
+            </ChatItem>
+          ))}
+        </ChatBox>
+        <FormWrapper onSubmit={sendMessage}>
+          <UsernameInput
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="메시지를 입력하세요."
+          />
+          <Btn type="submit">전송</Btn>
+        </FormWrapper>
+      </Wrapper>
+      
+      {/* 모달 관리 */}
       {showAlertModal &&
         <Modal onClick={() => setShowAlertModal(false)}>
           <TableTitle>로그인 후 이용해주세요.</TableTitle>
         </Modal>
       }
-      <ChatBox>
-        <InfoBox>실시간 채팅</InfoBox>
-        {messages.map((msg) => (
-          <ChatItem key={msg.nickname}>
-            {msg.nickname} : {msg.content}
-          </ChatItem>
-        ))}
-      </ChatBox>
-      <FormWrapper onSubmit={sendMessage}>
-        <UsernameInput
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="메시지를 입력하세요."
-        />
-        <Btn type="submit">전송</Btn>
-      </FormWrapper>
-    </Wrapper>
+    </>
+
   );
 };
 

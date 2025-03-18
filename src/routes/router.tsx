@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import Login from "../pages/login";
 import Home from "../pages/home";
 import App from "../App";
 import ErrorComponent from "../components/errorComponent";
@@ -7,6 +6,7 @@ import ErrorPage from "../pages/errorPage";
 import MyPage from "../pages/mypage";
 import SelectNickName from "../pages/selectUserInfo";
 import CommunityWrite from "../pages/communityWrite";
+import Community from "../pages/community";
 
 const Router = createBrowserRouter([
     {
@@ -16,11 +16,6 @@ const Router = createBrowserRouter([
             {
                 path: "",
                 element: <Home />,
-                errorElement: <ErrorComponent />,
-            },
-            {
-                path: "login",
-                element: <Login />,
                 errorElement: <ErrorComponent />,
             },
             {
@@ -36,6 +31,11 @@ const Router = createBrowserRouter([
             {
                 path: "community/write",
                 element: <CommunityWrite />,
+                errorElement: <ErrorComponent />
+            },
+            {
+                path: "community/:communityId",
+                element: <Community />,
                 errorElement: <ErrorComponent />
             }
         ],
