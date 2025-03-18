@@ -13,10 +13,7 @@
 ### 📍 사용 라이브러리
 |라이브러리명|설명|
 |------|---|
-|@stomp/stompjs
-socket.io-client
-sockjs-client|실시간 채팅을 위한 라이브러리|
-|@ckeditor/ckeditor5-build-classic
-@ckeditor/ckeditor5-react|첨부 파일과 함께 글을 작성하기 위한 글쓰기 툴 라이브러리(44버전 이상부터는 config에 licenseKey를 GPL로 해야 무료판을 사용가능)|
+|@stomp/stompjs, socket.io-client, sockjs-client|실시간 채팅을 위한 라이브러리|
+|@ckeditor/ckeditor5-build-classic, @ckeditor/ckeditor5-react|첨부 파일과 함께 글을 작성하기 위한 글쓰기 툴 라이브러리(44버전 이상부터는 config에 licenseKey를 GPL로 해야 무료판을 사용가능)|
 |styled-components|컴포넌트별로 스타일링을 위한 라이브러리|
 |zustand|상태 관리 라이브러리|
