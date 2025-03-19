@@ -150,46 +150,50 @@ const MyPage = () => {
   };
 
   return (
-    <Wrapper>
+    <>
+      <Wrapper>
+        <Title>{user?.name}님, 안녕하세요!</Title>
+        <Container>
+          <InfoBox>
+            {userInfo &&
+              <>
+                <EmailBox>
+                  <EmailLegend>이메일</EmailLegend>
+                  <Info>{user?.email}</Info>
+                </EmailBox>
+                <EmailBox>
+                  <EmailLegend>닉네임</EmailLegend>
+                  <Info>{userInfo?.nickname}</Info>
+                </EmailBox>
+                <EmailBox>
+                  <EmailLegend>포인트 & 경험치</EmailLegend>
+                  <Info>{userInfo?.point} Point</Info>
+                  <Info>LV. {userInfo?.level} [{userInfo?.exp} EXP]</Info>
+                </EmailBox>
+                <EmailBox>
+                  <EmailLegend>My Team</EmailLegend>
+                  <ImgItem src={userInfo?.imageUrl} />
+                </EmailBox>
+              </>
+            }
+          </InfoBox>
+        </Container>
+        <ButtonContainer>
+          {!userInfo && <Link to={'/mypage/userinfo'}><SelectButton>닉네임 정하기</SelectButton></Link>}
+          {userInfo && <Link to={'/mypage/edit/nickname'}><SelectButton>닉네임 수정하기</SelectButton></Link>}
+          {userInfo && <Link to={'/mypage/edit/image'}><SelectButton>이미지 수정하기</SelectButton></Link>}
+          {(user && userInfo) && <LogoutButton onClick={handleDelModal}>탈퇴하기</LogoutButton>}
+        </ButtonContainer>
+      </Wrapper >
+
+      {/* 모달 관리 */}
       {showRemoveModal &&
         <Modal onClick={() => setShowRemoveModal(false)}>
           <Title>회원 탈퇴를 하시겠습니까? 계정 복구는 불가합니다.</Title>
           <ModalDelButton onClick={handleDelete}>탈퇴하기</ModalDelButton>
         </Modal>
       }
-      <Title>{user?.name}님, 안녕하세요!</Title>
-      <Container>
-        <InfoBox>
-          {userInfo &&
-            <>
-              <EmailBox>
-                <EmailLegend>이메일</EmailLegend>
-                <Info>{user?.email}</Info>
-              </EmailBox>
-              <EmailBox>
-                <EmailLegend>닉네임</EmailLegend>
-                <Info>{userInfo?.nickname}</Info>
-              </EmailBox>
-              <EmailBox>
-                <EmailLegend>포인트 & 경험치</EmailLegend>
-                <Info>{userInfo?.point} Point</Info>
-                <Info>LV. {userInfo?.level} [{userInfo?.exp} EXP]</Info>
-              </EmailBox>
-              <EmailBox>
-                <EmailLegend>My Team</EmailLegend>
-                <ImgItem src={userInfo?.imageUrl} />
-              </EmailBox>
-            </>
-          }
-        </InfoBox>
-      </Container>
-      <ButtonContainer>
-        {!userInfo && <Link to={'/mypage/userinfo'}><SelectButton>닉네임 정하기</SelectButton></Link>}
-        {userInfo && <Link to={'/mypage/edit/nickname'}><SelectButton>닉네임 수정하기</SelectButton></Link>}
-        {userInfo && <Link to={'/mypage/edit/image'}><SelectButton>이미지 수정하기</SelectButton></Link>}
-        {(user && userInfo) && <LogoutButton onClick={handleDelModal}>탈퇴하기</LogoutButton>}
-      </ButtonContainer>
-    </Wrapper >
+    </>
   );
 }
 

@@ -35,7 +35,7 @@ const Home = () => {
                     credentials: "include",
                 });
                 const data = await response.json();
-                setInfo(data.nickname);
+                setInfo({ "nickname": data.nickname });
             } catch (error) {
                 console.error("유저 상세 정보 불러오기 실패", error);
             }

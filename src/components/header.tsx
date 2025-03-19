@@ -40,8 +40,8 @@ const HomeTitle = styled.div`
 `;
 
 const Header = () => {
-  const { isLogin, login, logout } = useAuth();
   const navigate = useNavigate();
+  const { isLogin, login, logout } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false); // 로그인 모달 상태 관리
 
   useEffect(() => {
@@ -70,8 +70,8 @@ const Header = () => {
       method: "POST",
       credentials: "include",
     });
-    logout();
     navigate("/");
+    logout();
   };
 
   return (

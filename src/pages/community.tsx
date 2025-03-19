@@ -5,6 +5,7 @@ import IContent from "../types/content";
 import Communities from "../components/communities";
 import Modal from "../components/modal";
 import IComment from "../types/comment";
+import useAuth from "../stores/useAuth";
 
 const Wrapper = styled.div`
     display: flex;
@@ -65,30 +66,30 @@ const Dynamiccontent = styled.div`
 `;
 
 const FormWrapper = styled.form`
-  display:flex;
-  gap: 1rem;
+    display:flex;
+    gap: 1rem;
 `;
 
 const UsernameInput = styled.input`
-  padding: 0.5rem 2rem;
-  border-radius: 1rem;
-  border: 1px solid #333;
-  background-color: #fff;
-  color: #333;
-  font-size: 1rem;
+    padding: 0.5rem 2rem;
+    border-radius: 1rem;
+    border: 1px solid #333;
+    background-color: #fff;
+    color: #333;
+    font-size: 1rem;
 `;
 
 const Btn = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  background-color: #08ccac;
-  color: #fff;
-  border-radius: 1rem;
-  font-size: 1rem;
-  border: 1px solid #08ccac;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    background-color: #08ccac;
+    color: #fff;
+    border-radius: 1rem;
+    font-size: 1rem;
+    border: 1px solid #08ccac;
+    cursor: pointer;
 `;
 
 const CommentBox = styled.div`
@@ -108,19 +109,49 @@ const ReplyButton = styled.button`
     font-size: 1rem;
 `;
 
+const CommentHeader1 = styled.div`
+    display:flex;
+    align-items: center;
+`;
+
+const TeamLogo = styled.img`
+    width: 3rem;
+    height: 3rem;
+`;
+
+const ButtonContainer = styled.div`
+    display: flex;
+    gap: 1rem;
+`;
+
+const ModalDelButton = styled.button`
+    color: #fff;
+    background-color: crimson;
+    border: crimson;
+    padding: 0.7rem 2rem;
+    font-size: 1.2rem;
+    border-radius:0.5rem;
+    cursor: pointer;
+`;
+
 const Community = () => {
+    const { userInfo } = useAuth();
     const { communityId } = useParams();    // 상세페이지 들어오기 위한 params
     const [showAlertModal, setShowAlertModal] = useState<boolean>(false); // 로그인 경고창 모달 상태 관리
     const [showLikeModal, setShowLikeModal] = useState<boolean>(false); // 좋아요 경고창 모달 상태 관리
     const [showDupLikeModal, setShowDupLikeModal] = useState<boolean>(false); // 이미 좋아요 누른 경고창 모달 상태 관리
+    const [showCommentModal, setShowCommentModal] = useState<boolean>(false);   // 댓글 작성 완료 모달 관리
+    const [showEditCommentModal, setShowEditCommentModal] = useState<boolean>(false);   // 댓글 수정 완료 모달 관리
+    const [showDeleteCommentModal, setShowDeleteCommentModal] = useState<boolean>(false);   // 댓글 삭제 경고 모달 관리
     const [communityPost, setCommunityPost] = useState<IContent>(); // 커뮤니티 글 한개
     const [communityList, setCommunityList] = useState<IContent[]>([]); // 커뮤니티 리스트 상태 관리
     const [content, setContent] = useState<string>(""); // 댓글 작성
     const [commentList, setCommentList] = useState<IComment[]>([]); // 커뮤니티 글 한개의 댓글 목록
-    const [showCommentModal, setShowCommentModal] = useState<boolean>(false);   // 댓글 작성 완료 모달 관리
     const [showReplyForm, setShowReplyForm] = useState<{ [key: number]: boolean }>({}); // 대댓글 작성 폼 상태 관리
     const [reply, setReply] = useState<string>(""); // 대댓글 작성
     const [parentId, setParentId] = useState<number>(); // 대댓글 작성을 위한 댓글의 id
+    const [showEditForm, setShowEditForm] = useState<{ [key: number]: boolean }>({});  // 댓글 수정 폼 상태 관리
+    const [editContent, setEditContent] = useState<string>("");
 
     useEffect(() => {
         // 커뮤니티 글 한 개 데이터 불러오기
@@ -156,7 +187,6 @@ const Community = () => {
                     credentials: "include",
                 });
                 const data = await response.json();
-                console.log(data);
                 setCommentList(data);
             } catch (error) {
                 console.error("댓글 불러오기 오류", error)
@@ -165,7 +195,7 @@ const Community = () => {
         fetchCommunity();
         fetchData();
         fetchComment();
-    }, [communityId, showCommentModal, showLikeModal]);
+    }, [communityId, showCommentModal, showLikeModal, showEditCommentModal, showDeleteCommentModal]);
 
     // 좋아요 버튼 누르기
     const addLike = async (id: number) => {
@@ -191,47 +221,111 @@ const Community = () => {
     const postComment = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            await fetch(`http://localhost:8080/${communityId}/comment`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ content }),
-                credentials: "include",
-            });
-            setShowCommentModal(true);
-            setContent("");
+            if (!userInfo) {
+                setShowAlertModal(true)
+                setContent("");
+            } else if (userInfo) {
+                await fetch(`http://localhost:8080/${communityId}/comment`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ content }),
+                    credentials: "include",
+                });
+                setShowCommentModal(true);
+                setContent("");
+            }
         } catch (error) {
             console.error("댓글 입력 실패", error);
         }
     };
 
     // 대댓글 폼 열기
-    const toggleReplyForm = (commentId: number) => {
+    const toggleReplyForm = (comment: IComment) => {
         setShowReplyForm((prev) => ({
             ...prev,
-            [commentId]: !prev[commentId], // 해당 댓글 ID의 상태만 토글
+            [comment.id]: !prev[comment.id],
         }));
-        setParentId(commentId);
+        setParentId(comment.id);
     };
 
     // 대댓글 작성
-    const postReply = async (e: React.FormEvent<HTMLFormElement>) => {
+    const postReply = async (e: React.FormEvent<HTMLFormElement>, comment: IComment) => {
         e.preventDefault();
         try {
-            const content = reply;
-            await fetch(`http://localhost:8080/${communityId}/${parentId}/comment`, {
-                method: "POST",
+            if (!userInfo) {
+                setShowAlertModal(true)
+                setReply("");
+            } else if (userInfo) {
+                await fetch(`http://localhost:8080/${communityId}/${parentId}/comment`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ content: reply }),
+                    credentials: "include",
+                })
+                setShowCommentModal(true);
+                setShowReplyForm((prev) => ({
+                    ...prev,
+                    [comment.id]: false,
+                }));
+            }
+        } catch (error) {
+            console.error("대댓글 입력 실패", error);
+        }
+    };
+
+    // 댓글 수정 폼 열기
+    const toggleEditForm = (comment: IComment) => {
+        setShowEditForm((prev) => ({
+            ...prev,
+            [comment.id]: !prev[comment.id],
+        }));
+        setEditContent(comment.content);
+        setParentId(comment.id)
+    };
+
+    // 댓글 수정
+    const editComment = async (e: React.FormEvent<HTMLFormElement>, comment: IComment) => {
+        e.preventDefault();
+        try {
+            await fetch(`http://localhost:8080/${parentId}/comment`, {
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ content }),
+                body: JSON.stringify({ content: editContent }),
                 credentials: "include",
-            })
-            setShowCommentModal(true);
-            setReply("");
+            });
+            setShowEditCommentModal(true);
+            setShowEditForm((prev) => ({
+                ...prev,
+                [comment.id]: false,
+            }));
         } catch (error) {
-            console.error("대댓글 입력 실패", error);
+            console.error("댓글 수정 실패", error);
+        }
+    };
+
+    // 댓글 삭제 모달창 
+    const toggleDelete = (comment: IComment) => {
+        setShowDeleteCommentModal(true);
+        setParentId(comment.id)
+    }
+
+    // 댓글 삭제
+    const deleteComment = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        try {
+            await fetch(`http://localhost:8080/${parentId}/comment`, {
+                method: "DELETE",
+                credentials: "include",
+            });
+            setShowDeleteCommentModal(false);
+        } catch (error) {
+            console.error("댓글 삭제 실패", error);
         }
     };
 
@@ -259,32 +353,70 @@ const Community = () => {
                             />
                             <Btn type="submit">전송</Btn>
                         </FormWrapper>
+                        {/* 댓글 영역 */}
                         {commentList.map((comment) => (
-                            <CommentBox>
-                                <HeaderContent1>{comment.nickname} | {comment.createdAt}</HeaderContent1>
-                                <HeaderContent1>{comment.content} | <ReplyButton onClick={() => toggleReplyForm(comment.id)}>답글 쓰기</ReplyButton></HeaderContent1>
-                                {comment.children && comment.children.map((reply) => (
-                                    <>
-                                        <CommentBox>
-                                            <HeaderContent2>{reply.nickname} | {reply.createdAt}</HeaderContent2>
-                                            <HeaderContent1>{reply.content}</HeaderContent1>
-                                        </CommentBox>
-                                    </>
-                                ))}
-                                {showReplyForm[comment.id] &&
-                                    <FormWrapper onSubmit={postReply}>
+                            <CommentBox key={comment.id}>
+                                <CommentHeader1>
+                                    <TeamLogo />
+                                    <HeaderContent1>{comment.nickname} | {comment.createdAt}</HeaderContent1>
+                                </CommentHeader1>
+                                {!showEditForm[comment.id] && <HeaderContent1>{comment.content}</HeaderContent1>}
+                                {/* 댓글 수정 폼 */}
+                                {showEditForm[comment.id] &&
+                                    <FormWrapper onSubmit={(e) => editComment(e, comment)}>
                                         <UsernameInput
                                             type="text"
-                                            placeholder="대댓글을 입력하세요."
-                                            value={reply}
-                                            onChange={(e) => setReply(e.target.value)}
+                                            placeholder="댓글을 입력하세요."
+                                            value={editContent}
+                                            onChange={(e) => setEditContent(e.target.value)}
                                         />
-                                        <Btn type="submit">전송</Btn>
-                                    </FormWrapper>}
+                                        <Btn type="submit">수정</Btn>
+                                    </FormWrapper>
+                                }
+                                <ButtonContainer>
+                                    {/* 자기가 쓴 댓글만 수정 삭제 */}
+                                    {userInfo.nickname === comment.nickname &&
+                                        <>
+                                            <ReplyButton onClick={() => toggleEditForm(comment)}>댓글 수정</ReplyButton>
+                                            <ReplyButton onClick={() => toggleDelete(comment)}>댓글 삭제</ReplyButton>
+                                        </>
+                                    }
+                                    <ReplyButton onClick={() => toggleReplyForm(comment)}>답글 쓰기</ReplyButton>
+                                    {/* 대댓글 작성 폼 */}
+                                    {showReplyForm[comment.id] &&
+                                        <FormWrapper onSubmit={(e) => postReply(e, comment)}>
+                                            <UsernameInput
+                                                type="text"
+                                                placeholder="대댓글을 입력하세요."
+                                                value={reply}
+                                                onChange={(e) => setReply(e.target.value)}
+                                            />
+                                            <Btn type="submit">전송</Btn>
+                                        </FormWrapper>
+                                    }
+                                </ButtonContainer>
+                                {/* 대댓글 영역 */}
+                                {comment.children && comment.children.map((reply) => (
+                                    <CommentBox>
+                                        <CommentHeader1>
+                                            <TeamLogo />
+                                            <HeaderContent2>{reply.nickname} | {reply.createdAt}</HeaderContent2>
+                                        </CommentHeader1>
+                                        <HeaderContent1>{reply.content}</HeaderContent1>
+                                    </CommentBox>
+                                ))}
+                                {/* 댓글 삭제 알림 모달 */}
+                                {showDeleteCommentModal &&
+                                    <Modal onClick={() => setShowDeleteCommentModal(false)}>
+                                        <TableTitle>댓글을 삭제하시겠습니까?</TableTitle>
+                                        <ModalDelButton onClick={(e) => deleteComment(e)}>Delete</ModalDelButton>
+                                    </Modal>
+                                }
                             </CommentBox>
                         ))}
                     </MainContainer>
                 )}
+                {/* 커뮤니티 목록 영역 */}
                 <Communities communityList={communityList} addLike={addLike} />
             </Wrapper >
 
@@ -292,6 +424,11 @@ const Community = () => {
             {showCommentModal &&
                 <Modal onClick={() => setShowCommentModal(false)}>
                     <TableTitle>댓글 작성이 완료 되었습니다.</TableTitle>
+                </Modal>
+            }
+            {showEditCommentModal &&
+                <Modal onClick={() => setShowEditCommentModal(false)}>
+                    <TableTitle>댓글 수정이 완료 되었습니다.</TableTitle>
                 </Modal>
             }
             {showLikeModal &&
@@ -310,7 +447,6 @@ const Community = () => {
                 </Modal>
             }
         </>
-
     );
 }
 

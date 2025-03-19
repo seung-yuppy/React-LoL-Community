@@ -4,6 +4,7 @@ import { Client } from "@stomp/stompjs";
 import styled from "styled-components";
 import IUserInfo from "../types/userInfo";
 import Modal from "./modal";
+import useAuth from "../stores/useAuth";
 
 const Wrapper = styled.div`
   display: flex;
@@ -56,8 +57,10 @@ const InfoBox = styled.div`
 `;
 
 const ChatItem = styled.p`
+  display: flex;
+  align-items: center;
   font-size: 1rem;
-  padding: 0.7rem;
+  padding: 0.3rem;
   line-height: 1rem;
 `;
 
@@ -73,11 +76,17 @@ const TableTitle = styled.h2`
     font-weight: bold;
 `;
 
+const TeamLogo = styled.img`
+    width: 3rem;
+    height: 3rem;
+`;
+
 const Chat = () => {
+  const { userInfo } = useAuth();
   const [client, setClient] = useState<Client | null>(null);
   const [messages, setMessages] = useState<{ nickname: string; content: string }[]>([]);
   const [message, setMessage] = useState<string>("");
-  const [userInfo, setUserInfo] = useState<IUserInfo | null>();
+  const [userDetail, setUserDetail] = useState<IUserInfo | null>();
   const [showAlertModal, setShowAlertModal] = useState<boolean>(false); // 로그인 경고창 모달 상태 관리
 
   useEffect(() => {
@@ -88,7 +97,7 @@ const Chat = () => {
           credentials: "include",
         });
         const data = await response.json();
-        setUserInfo(data);
+        setUserDetail(data);
       } catch (error) {
         console.error("유저 상세 정보 불러오기 실패", error);
       }
@@ -128,10 +137,10 @@ const Chat = () => {
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (userInfo && client && client.connected && message.trim()) {
+    if (userDetail && client && client.connected && message.trim()) {
       client.publish({
         destination: "/app/chat",
-        body: JSON.stringify({ nickname: userInfo?.nickname, content: message }),
+        body: JSON.stringify({ nickname: userDetail?.nickname, content: message }),
       });
       setMessage("");
     } else {
@@ -148,7 +157,7 @@ const Chat = () => {
           <InfoBox>실시간 채팅</InfoBox>
           {messages.map((msg) => (
             <ChatItem key={msg.nickname}>
-              {msg.nickname} : {msg.content}
+              <TeamLogo src={userInfo?.imageurl} />{msg.nickname} : {msg.content}
             </ChatItem>
           ))}
         </ChatBox>
@@ -162,7 +171,7 @@ const Chat = () => {
           <Btn type="submit">전송</Btn>
         </FormWrapper>
       </Wrapper>
-      
+
       {/* 모달 관리 */}
       {showAlertModal &&
         <Modal onClick={() => setShowAlertModal(false)}>

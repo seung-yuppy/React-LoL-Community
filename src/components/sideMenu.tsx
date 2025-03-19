@@ -3,6 +3,7 @@ import useAuth from "../stores/useAuth";
 import { useState } from "react";
 import Modal from "./modal";
 import LoginForm from "./loginForm";
+import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
     display: flex;
@@ -46,6 +47,7 @@ const InfoMenu = styled.p`
 `;
 
 const SideMenu = () => {
+    const navigate = useNavigate();
     const { isLogin, logout } = useAuth();
     const [showLoginModal, setShowLoginModal] = useState<boolean>(false); // 로그인 모달 상태 관리
 
@@ -60,6 +62,7 @@ const SideMenu = () => {
             method: "POST",
             credentials: "include",
         });
+        navigate("/");
         logout();
     };
 
