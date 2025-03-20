@@ -84,26 +84,11 @@ const TeamLogo = styled.img`
 const Chat = () => {
   const { userInfo } = useAuth();
   const [client, setClient] = useState<Client | null>(null);
-  const [messages, setMessages] = useState<{ nickname: string; content: string }[]>([]);
+  const [messages, setMessages] = useState<{ nickname: string, content: string }[]>([]);
   const [message, setMessage] = useState<string>("");
-  const [userDetail, setUserDetail] = useState<IUserInfo | null>();
   const [showAlertModal, setShowAlertModal] = useState<boolean>(false); // 로그인 경고창 모달 상태 관리
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/info`, {
-          method: "GET",
-          credentials: "include",
-        });
-        const data = await response.json();
-        setUserDetail(data);
-      } catch (error) {
-        console.error("유저 상세 정보 불러오기 실패", error);
-      }
-    };
-    fetchUserInfo();
-
     // SockJS를 사용한 WebSocket 연결
     const socket = new SockJS(`http://localhost:8080/ws`, { Credential: "include" });
     const stompClient = new Client({
@@ -137,10 +122,10 @@ const Chat = () => {
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (userDetail && client && client.connected && message.trim()) {
+    if (userInfo && client && client.connected && message.trim()) {
       client.publish({
         destination: "/app/chat",
-        body: JSON.stringify({ nickname: userDetail?.nickname, content: message }),
+        body: JSON.stringify({ nickname: userInfo.nickname, content: message }),
       });
       setMessage("");
     } else {
@@ -155,9 +140,9 @@ const Chat = () => {
       <Wrapper>
         <ChatBox>
           <InfoBox>실시간 채팅</InfoBox>
-          {messages.map((msg) => (
-            <ChatItem key={msg.nickname}>
-              <TeamLogo src={userInfo?.imageurl} />{msg.nickname} : {msg.content}
+          {messages.map((msg, index) => (
+            <ChatItem key={index}>
+              <TeamLogo />{msg.nickname} : {msg.content}
             </ChatItem>
           ))}
         </ChatBox>

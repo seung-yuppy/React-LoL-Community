@@ -46,17 +46,17 @@ const WriteButton = styled.button`
 `;
 
 const CommunityWrite = () => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState<string>(""); // 글 제목
+  const [content, setContent] = useState<string>(""); // 글 내용
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false); // 글 등록 알림 모달 상태 관리
   const navigate = useNavigate();
 
   const sendCommunity = async (
-    event: React.FormEvent<HTMLButtonElement>,
+    e: React.MouseEvent<HTMLButtonElement>,
     title: string,
     content: string
   ) => {
-    event.preventDefault();
+    e.preventDefault();
     await fetch(`http://localhost:8080/community`, {
       method: "POST",
       headers: {
@@ -109,38 +109,42 @@ const CommunityWrite = () => {
   }
 
   return (
-    <Wrapper>
+    <>
+      <Wrapper>
+        <MainContainer>
+          <Title>글 작성</Title>
+          <TitleInput
+            placeholder="제목을 입력하세요."
+            value={title}
+            onChange={(e) => setTitle(e.currentTarget.value)}
+            type="text"
+          />
+          <CKEditor
+            editor={ClassicEditor}
+            config={{
+              licenseKey: "GPL",
+              placeholder: "내용을 입력하세요.",
+              extraPlugins: [uploadPlugin],
+            }}
+            data=""
+            onChange={(_, editor) => {
+              const data = editor.getData();
+              setContent(data);
+            }}
+          />
+          <WriteButton onClick={(e) => sendCommunity(e, title, content)}>
+            글 게시하기
+          </WriteButton>
+        </MainContainer>
+      </Wrapper >
+
+      {/* 모달 관리 */}
       {showConfirmModal &&
         <Modal onClick={() => { setShowConfirmModal(false); navigate("/") }}>
           <Title> 글 등록을 완료하였습니다.</Title >
         </Modal >
       }
-      <MainContainer>
-        <Title>글 작성</Title>
-        <TitleInput
-          placeholder="제목을 입력하세요."
-          value={title}
-          onChange={(e) => setTitle(e.currentTarget.value)}
-          type="text"
-        />
-        <CKEditor
-          editor={ClassicEditor}
-          config={{
-            licenseKey: "GPL",
-            placeholder: "내용을 입력하세요.",
-            extraPlugins: [uploadPlugin],
-          }}
-          data=""
-          onChange={(_, editor) => {
-            const data = editor.getData();
-            setContent(data);
-          }}
-        />
-        <WriteButton onClick={(event) => sendCommunity(event, title, content)}>
-          글 게시하기
-        </WriteButton>
-      </MainContainer>
-    </Wrapper >
+    </>
   );
 }
 

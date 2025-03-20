@@ -5,6 +5,9 @@ import useAuth from "../stores/useAuth";
 import IUser from "../types/user";
 import Modal from "../components/modal";
 import IUserInfo from "../types/userInfo";
+import IContent from "../types/content";
+import IComment from "../types/comment";
+import ico_arrow_turn_down from "../assets/images/ico_arrow_turn_down.svg";
 
 const Wrapper = styled.div`
     display: flex;
@@ -14,6 +17,7 @@ const Wrapper = styled.div`
     width: 60rem;
     border: 1px solid #333;
     border-radius: 1rem;
+    overflow: scroll;
 `;
 
 const Title = styled.h2`
@@ -33,7 +37,7 @@ const EmailBox = styled.fieldset`
     justify-content: center;
     gap: 1rem;
     border: 1px solid gray;
-    padding: 1.5rem 3rem;
+    padding: 1rem 3rem;
     border-radius: 1rem;
 `;
 
@@ -89,12 +93,60 @@ const ModalDelButton = styled.button`
     cursor: pointer;
 `;
 
+const MyBox = styled.fieldset`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid gray;
+    padding: 1rem 3rem;
+    height: 20rem;
+    border-radius: 1rem;
+    overflow-y: scroll;
+`
+
+const MyItem = styled.ul`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+`;
+
+const MyItemList = styled.li`
+    font-size: 1.3rem;
+    list-style-type: circle;
+    line-height: 1.5rem;
+`;
+
+const ItemBox = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+`;
+
+const ItemTitle = styled.h2`
+    font-size: 1.3rem;
+`;
+
+const ItemContent = styled.p`
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    gap: 0.5rem;
+`;
+
+const CommentImage = styled.img`
+    cursor:pointer;
+    width: 2rem;
+    object-fit: cover;
+`;
+
 const MyPage = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [user, setUser] = useState<IUser>(); // 유저 기본 정보
   const [userInfo, setUserInfo] = useState<IUserInfo | null>(); // 유저 상세 정보
   const [showRemoveModal, setShowRemoveModal] = useState<boolean>(false); // 탈퇴 알림 모달 상태 관리
+  const [myCommunity, setMyCommunity] = useState<IContent[]>([]); // 내가 쓴 글 목록
+  const [myComment, setMyComment] = useState<IComment[]>([]); // 내가 쓴 댓글 목록
 
   useEffect(() => {
     // 유저 기본 정보 불러오기
@@ -126,8 +178,36 @@ const MyPage = () => {
         console.error("유저 상세 정보 불러오기 실패", error);
       }
     };
+    // 내가 쓴 글 불러오기
+    const fetchMyCommunity = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/community/my`, {
+          method: "GET",
+          credentials: "include",
+        })
+        const data = await response.json();
+        setMyCommunity(data);
+      } catch (error) {
+        console.error("내가 쓴 글 불러오기 실패", error);
+      }
+    };
+    // 내가 쓴 댓글 목록
+    const fetchMyComment = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/comment/my`, {
+          method: "GET",
+          credentials: "include",
+        })
+        const data = await response.json();
+        setMyComment(data);
+      } catch (error) {
+        console.error("내가 쓴 댓글 불러오기 실패", error);
+      }
+    }
     fetchUser();
     fetchUserInfo();
+    fetchMyCommunity();
+    fetchMyComment();
   }, []);
 
   // 탈퇴 버튼 누르면 모달창 생성
@@ -153,6 +233,8 @@ const MyPage = () => {
     <>
       <Wrapper>
         <Title>{user?.name}님, 안녕하세요!</Title>
+
+        {/* 유저 정보 영역 */}
         <Container>
           <InfoBox>
             {userInfo &&
@@ -174,15 +256,46 @@ const MyPage = () => {
                   <EmailLegend>My Team</EmailLegend>
                   <ImgItem src={userInfo?.imageUrl} />
                 </EmailBox>
+                <MyBox>
+                  <EmailLegend>내가 쓴 글</EmailLegend>
+                  <MyItem>
+                    {myCommunity.map((community) => (
+                      <MyItemList key={community.id}>
+                        <Link to={`/community/${community.id}`}>{community.title}</Link>
+                      </MyItemList>
+                    ))}
+                  </MyItem>
+                </MyBox>
+                <MyBox>
+                  <EmailLegend>내가 쓴 댓글</EmailLegend>
+                  <MyItem>
+                    {myComment.map((comment) => (
+                      <MyItemList key={comment.id}>
+                        <Link to={`/community/${comment.communityId}`}>
+                          <ItemBox>
+                            <ItemTitle>{comment.communityTitle}</ItemTitle>
+                            <ItemContent><CommentImage src={ico_arrow_turn_down} />{comment.content}</ItemContent>
+                          </ItemBox>
+                        </Link>
+                      </MyItemList>
+                    ))}
+                  </MyItem>
+                </MyBox>
               </>
             }
           </InfoBox>
         </Container>
+
+        {/* 버튼 영역 */}
         <ButtonContainer>
           {!userInfo && <Link to={'/mypage/userinfo'}><SelectButton>닉네임 정하기</SelectButton></Link>}
-          {userInfo && <Link to={'/mypage/edit/nickname'}><SelectButton>닉네임 수정하기</SelectButton></Link>}
-          {userInfo && <Link to={'/mypage/edit/image'}><SelectButton>이미지 수정하기</SelectButton></Link>}
-          {(user && userInfo) && <LogoutButton onClick={handleDelModal}>탈퇴하기</LogoutButton>}
+          {userInfo &&
+            <>
+              <Link to={'/mypage/edit/nickname'}><SelectButton>닉네임 수정하기</SelectButton></Link>
+              <Link to={'/mypage/edit/image'}><SelectButton>이미지 수정하기</SelectButton></Link>
+            </>
+          }
+          {userInfo && <LogoutButton onClick={handleDelModal}>탈퇴하기</LogoutButton>}
         </ButtonContainer>
       </Wrapper >
 

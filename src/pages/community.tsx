@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import IContent from "../types/content";
 import Communities from "../components/communities";
@@ -134,7 +134,27 @@ const ModalDelButton = styled.button`
     cursor: pointer;
 `;
 
+const InfoHeader = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+`;
+
+const EditButton = styled(ReplyButton)`
+    border: 1px solid gray;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+`;
+
+const DeleteButton = styled(ReplyButton)`
+    border: 1px solid crimson;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+    color: crimson;
+`;
+
 const Community = () => {
+    const navigate = useNavigate();
     const { userInfo } = useAuth();
     const { communityId } = useParams();    // 상세페이지 들어오기 위한 params
     const [showAlertModal, setShowAlertModal] = useState<boolean>(false); // 로그인 경고창 모달 상태 관리
@@ -143,6 +163,7 @@ const Community = () => {
     const [showCommentModal, setShowCommentModal] = useState<boolean>(false);   // 댓글 작성 완료 모달 관리
     const [showEditCommentModal, setShowEditCommentModal] = useState<boolean>(false);   // 댓글 수정 완료 모달 관리
     const [showDeleteCommentModal, setShowDeleteCommentModal] = useState<boolean>(false);   // 댓글 삭제 경고 모달 관리
+    const [showDeleteCommunityModal, setShowDeleteCommunityModal] = useState<boolean>(false); // 게시글 삭제 경고 모달 관리
     const [communityPost, setCommunityPost] = useState<IContent>(); // 커뮤니티 글 한개
     const [communityList, setCommunityList] = useState<IContent[]>([]); // 커뮤니티 리스트 상태 관리
     const [content, setContent] = useState<string>(""); // 댓글 작성
@@ -195,7 +216,7 @@ const Community = () => {
         fetchCommunity();
         fetchData();
         fetchComment();
-    }, [communityId, showCommentModal, showLikeModal, showEditCommentModal, showDeleteCommentModal]);
+    }, [communityId, showCommentModal, showLikeModal, showEditCommentModal, showDeleteCommentModal, showDeleteCommunityModal]);
 
     // 좋아요 버튼 누르기
     const addLike = async (id: number) => {
@@ -214,6 +235,24 @@ const Community = () => {
             }
         } catch (error) {
             console.error("좋아요 실패", error);
+        }
+    };
+
+    // 게시글 삭제
+    const deleteCommunity = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        try {
+            await fetch(
+                `http://localhost:8080/community/${communityId}`,
+                {
+                    method: "DELETE",
+                    credentials: "include",
+                }
+            );
+            navigate("/");
+        } catch (error) {
+            console.error("게시글 삭제 오류", error);
+            setShowDeleteCommunityModal(false);
         }
     };
 
@@ -335,10 +374,17 @@ const Community = () => {
                 {communityPost && (
                     <MainContainer key={communityPost.id}>
                         <Title>{communityPost.title}</Title>
-                        <ContentHeader>
-                            <HeaderContent1>{communityPost.nickname} | {communityPost.updatedAt}</HeaderContent1>
-                            <HeaderContent2>조회수 {communityPost.viewsCount} | 댓글 {communityPost.commentsCount} | 추천 {communityPost.likesCount}</HeaderContent2>
-                        </ContentHeader>
+                        <InfoHeader>
+                            <ContentHeader>
+                                <HeaderContent1>{communityPost.nickname} | {communityPost.updatedAt}</HeaderContent1>
+                                <HeaderContent2>조회수 {communityPost.viewsCount} | 댓글 {communityPost.commentsCount} | 추천 {communityPost.likesCount}</HeaderContent2>
+                            </ContentHeader>
+                            {communityPost.nickname === userInfo.nickname &&
+                                <ButtonContainer>
+                                    <Link to={`/community/${communityPost.id}/edit`}><EditButton>수정</EditButton></Link>
+                                    <DeleteButton onClick={() => setShowDeleteCommunityModal(true)}>삭제</DeleteButton>
+                                </ButtonContainer>}
+                        </InfoHeader>
                         <Dynamiccontent
                             dangerouslySetInnerHTML={{
                                 __html: communityPost.content,
@@ -421,6 +467,12 @@ const Community = () => {
             </Wrapper >
 
             {/* 모달 관리 */}
+            {showDeleteCommunityModal &&
+                <Modal onClick={() => setShowDeleteCommunityModal(false)}>
+                    <TableTitle>게시글을 삭제하시겠습니까?</TableTitle>
+                    <ModalDelButton onClick={(e) => deleteCommunity(e)}>Delete</ModalDelButton>
+                </Modal>
+            }
             {showCommentModal &&
                 <Modal onClick={() => setShowCommentModal(false)}>
                     <TableTitle>댓글 작성이 완료 되었습니다.</TableTitle>

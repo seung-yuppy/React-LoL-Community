@@ -7,6 +7,7 @@ import MyPage from "../pages/mypage";
 import SelectNickName from "../pages/selectUserInfo";
 import CommunityWrite from "../pages/communityWrite";
 import Community from "../pages/community";
+import CommunityEdit from "../pages/communityEdit";
 
 const Router = createBrowserRouter([
     {
@@ -36,6 +37,11 @@ const Router = createBrowserRouter([
             {
                 path: "community/:communityId",
                 element: <Community />,
+                errorElement: <ErrorComponent />
+            },
+            {
+                path: "community/:communityId/edit",
+                element: <CommunityEdit />,
                 errorElement: <ErrorComponent />
             }
         ],

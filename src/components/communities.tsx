@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import useAuth from "../stores/useAuth";
 import ico_up from "../assets/images/ico_up.svg"
+import ico_down from "../assets/images/ico_down.svg";
 import IContent from "../types/content";
 
 const Wrapper = styled.div`
@@ -63,6 +64,12 @@ const BoxInfo = styled.div`
     gap: 1.3rem;
 `;
 
+const ButtonContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
 const LikeButton = styled.button`
     cursor: pointer;
     color: #333;
@@ -94,12 +101,15 @@ const Communities = ({ communityList, addLike }: CommunitiesProps) => {
                         <TableBox>
                             {communityList.slice(0, 20).map((community) => (
                                 <TableBody key={community.id}>
-                                    <TableBodytd>
-                                        <SearchImage src={ico_up} alt="이미지 없음" />
+                                    <ButtonContainer>
                                         <LikeButton onClick={() => addLike(community.id)}>
-                                            {community.likesCount}
+                                            <SearchImage src={ico_up} alt="이미지 없음" />
                                         </LikeButton>
-                                    </TableBodytd>
+                                        {community.likesCount}
+                                        <LikeButton>
+                                            <SearchImage src={ico_down} alt="이미지 없음" />
+                                        </LikeButton>
+                                    </ButtonContainer>
                                     <Link to={`/community/${community.id}`}>
                                         <BoxInfo>
                                             <TableBodytd>
