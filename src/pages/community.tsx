@@ -6,6 +6,8 @@ import Communities from "../components/communities";
 import Modal from "../components/modal";
 import IComment from "../types/comment";
 import useAuth from "../stores/useAuth";
+import ico_bad from "../assets/images/ico_bad.svg";
+import ico_good from "../assets/images/ico_good.svg";
 
 const Wrapper = styled.div`
     display: flex;
@@ -153,6 +155,20 @@ const DeleteButton = styled(ReplyButton)`
     color: crimson;
 `;
 
+const GoodComment = styled.img`
+    width: 2rem;
+    height: 2rem;
+`;
+
+const GoodBox = styled.div`
+    display:flex;
+    align-items: center;
+    gap: 0.5rem;
+`;
+
+const GoodBtn = styled.button`
+`;
+
 const Community = () => {
     const navigate = useNavigate();
     const { userInfo } = useAuth();
@@ -164,6 +180,9 @@ const Community = () => {
     const [showEditCommentModal, setShowEditCommentModal] = useState<boolean>(false);   // 댓글 수정 완료 모달 관리
     const [showDeleteCommentModal, setShowDeleteCommentModal] = useState<boolean>(false);   // 댓글 삭제 경고 모달 관리
     const [showDeleteCommunityModal, setShowDeleteCommunityModal] = useState<boolean>(false); // 게시글 삭제 경고 모달 관리
+    const [showGoodCommentModal, setShowGoodCommentModal] = useState<boolean>(false);   // 댓글 좋아요 모달 관리
+    const [showHateCommentModal, setShowHateCommentModal] = useState<boolean>(false);   // 댓글 싫어요 모달 관리
+    const [showAlreadyCommentModal, setShowAlreadyCommentModal] = useState<boolean>(false);   // 댓글 이미 공감했어요 모달 관리
     const [communityPost, setCommunityPost] = useState<IContent>(); // 커뮤니티 글 한개
     const [communityList, setCommunityList] = useState<IContent[]>([]); // 커뮤니티 리스트 상태 관리
     const [content, setContent] = useState<string>(""); // 댓글 작성
@@ -216,7 +235,7 @@ const Community = () => {
         fetchCommunity();
         fetchData();
         fetchComment();
-    }, [communityId, showCommentModal, showLikeModal, showEditCommentModal, showDeleteCommentModal, showDeleteCommunityModal]);
+    }, [communityId, showCommentModal, showLikeModal, showEditCommentModal, showDeleteCommentModal, showDeleteCommunityModal, showAlreadyCommentModal, showGoodCommentModal, showHateCommentModal]);
 
     // 좋아요 버튼 누르기
     const addLike = async (id: number) => {
@@ -368,6 +387,42 @@ const Community = () => {
         }
     };
 
+    // 댓글 좋아요
+    const goodComment = async (comment: IComment) => {
+        try {
+            const response = await fetch(`http://localhost:8080/${comment.id}/like?likeType=like`, {
+                method: "POST",
+                credentials: "include"
+            })
+            const data = await response.text();
+            if (data === "이미 공감한 댓글입니다.") {
+                setShowAlreadyCommentModal(true);
+            } else {
+                setShowGoodCommentModal(true);
+            }
+        } catch (error) {
+            console.error("댓글 좋아요 실패", error);
+        }
+    };
+
+    // 댓글 싫어요
+    const hateComment = async (comment: IComment) => {
+        try {
+            const response = await fetch(`http://localhost:8080/${comment.id}/like?likeType=dislike`, {
+                method: "POST",
+                credentials: "include"
+            })
+            const data = await response.text();
+            if (data === "이미 공감한 댓글입니다.") {
+                setShowAlreadyCommentModal(true);
+            } else {
+                setShowHateCommentModal(true);
+            }
+        } catch (error) {
+            console.error("댓글 싫어요 실패", error);
+        }
+    };
+
     return (
         <>
             <Wrapper>
@@ -406,7 +461,21 @@ const Community = () => {
                                     <TeamLogo />
                                     <HeaderContent1>{comment.nickname} | {comment.createdAt}</HeaderContent1>
                                 </CommentHeader1>
-                                {!showEditForm[comment.id] && <HeaderContent1>{comment.content}</HeaderContent1>}
+                                {!showEditForm[comment.id] &&
+                                    <>
+                                        <HeaderContent1>{comment.content}</HeaderContent1>
+                                        {/* 댓글 좋아요 & 싫어요 영역 */}
+                                        <GoodBox>
+                                            <GoodBtn>
+                                                <GoodComment src={ico_good} alt="이미지 없음" onClick={() => goodComment(comment)} />
+                                            </GoodBtn>
+                                            <HeaderContent1>{comment.likesCount}</HeaderContent1>
+                                            <GoodBtn>
+                                                <GoodComment src={ico_bad} alt="이미지 없음" onClick={() => hateComment(comment)} />
+                                            </GoodBtn>
+                                        </GoodBox>
+                                    </>
+                                }
                                 {/* 댓글 수정 폼 */}
                                 {showEditForm[comment.id] &&
                                     <FormWrapper onSubmit={(e) => editComment(e, comment)}>
@@ -449,6 +518,16 @@ const Community = () => {
                                             <HeaderContent2>{reply.nickname} | {reply.createdAt}</HeaderContent2>
                                         </CommentHeader1>
                                         <HeaderContent1>{reply.content}</HeaderContent1>
+                                        {/* 대댓글 좋아요 & 싫어요 영역 */}
+                                        <GoodBox>
+                                            <GoodBtn>
+                                                <GoodComment src={ico_good} alt="이미지 없음" onClick={() => goodComment(reply)} />
+                                            </GoodBtn>
+                                            <HeaderContent1>{reply.likesCount}</HeaderContent1>
+                                            <GoodBtn>
+                                                <GoodComment src={ico_bad} alt="이미지 없음" onClick={() => hateComment(reply)} />
+                                            </GoodBtn>
+                                        </GoodBox>
                                     </CommentBox>
                                 ))}
                                 {/* 댓글 삭제 알림 모달 */}
@@ -467,6 +546,21 @@ const Community = () => {
             </Wrapper >
 
             {/* 모달 관리 */}
+            {showAlreadyCommentModal &&
+                <Modal onClick={() => setShowAlreadyCommentModal(false)}>
+                    <TableTitle>이미 공감한 댓글입니다.</TableTitle>
+                </Modal>
+            }
+            {showGoodCommentModal &&
+                <Modal onClick={() => setShowGoodCommentModal(false)}>
+                    <TableTitle>이 댓글을 좋아합니다.❤️</TableTitle>
+                </Modal>
+            }
+            {showHateCommentModal &&
+                <Modal onClick={() => setShowHateCommentModal(false)}>
+                    <TableTitle>이 댓글을 싫어합니다.</TableTitle>
+                </Modal>
+            }
             {showDeleteCommunityModal &&
                 <Modal onClick={() => setShowDeleteCommunityModal(false)}>
                     <TableTitle>게시글을 삭제하시겠습니까?</TableTitle>

@@ -4,43 +4,20 @@ import ico_google from "../assets/images/ico_google.svg"
 import ico_kakao from "../assets/images/ico_kakao.svg"
 import ico_naver from "../assets/images/ico_naver.svg"
 
-const Btn = styled.button`
+const BtnContainer = styled.div`
     display: flex;
-    align-items: center;
     gap: 3rem;
-    border: 1px solid #cacaca;
-    border-radius: 1rem;
-    padding: 1rem;
+`;
+
+const Btn = styled.button`
     cursor: pointer;
-    width: 20rem; 
-`;
-
-const NaverBtn = styled(Btn)`
-    border: 1px solid #03c75a;
-    background-color: #03c75a;
-`;
-
-const KakaoBtn = styled(Btn)`
-    border: 1px solid #fee500;
-    background-color: #fee500;
-`;
-
-const ImgBox = styled.div`
-    width: 2.5rem;
-    height: 2.5rem;
-`;
-
-const BtnTitle = styled.h1`
-    font-weight: 500;
-    opacity: 0.6;
-    color: #232836;
-    font-size: 1.3rem;
 `;
 
 const Img = styled.img`
-    width: 100%;
-    height: 100%;
+    width: 5rem;
+    height: 5rem;
     object-fit: cover;
+    border-radius: 50%;
 `;
 
 const LoginForm = () => {
@@ -69,33 +46,27 @@ const LoginForm = () => {
 
     return (
         <>
-            <Btn onClick={googleOnclick}>
-                <ImgBox>
+            <BtnContainer>
+                <Btn onClick={googleOnclick}>
                     <Img
                         src={ico_google}
                         alt="이미지 없음"
                     />
-                </ImgBox>
-                <BtnTitle>LogIn With Google</BtnTitle>
-            </Btn>
-            <NaverBtn onClick={naverOnclick}>
-                <ImgBox>
+                </Btn>
+                <Btn onClick={naverOnclick}>
                     <Img
                         src={ico_naver}
                         alt="이미지 없음"
                     />
-                </ImgBox>
-                <BtnTitle>LogIn With Naver</BtnTitle>
-            </NaverBtn>
-            <KakaoBtn onClick={kakaoOnclick}>
-                <ImgBox>
+                </Btn>
+                <Btn onClick={kakaoOnclick}>
                     <Img
                         src={ico_kakao}
                         alt="이미지 없음"
                     />
-                </ImgBox>
-                <BtnTitle>LogIn With KaKao</BtnTitle>
-            </KakaoBtn>
+                </Btn>
+            </BtnContainer>
+
         </>
     )
 }

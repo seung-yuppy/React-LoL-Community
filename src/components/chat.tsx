@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import styled from "styled-components";
-import IUserInfo from "../types/userInfo";
 import Modal from "./modal";
 import useAuth from "../stores/useAuth";
 
