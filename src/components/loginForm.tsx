@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import useAuth from "../stores/useAuth";
-import ico_google from "../assets/images/ico_google.svg"
-import ico_kakao from "../assets/images/ico_kakao.svg"
-import ico_naver from "../assets/images/ico_naver.svg"
+import ico_google from "../images/ico_google.svg"
+import ico_kakao from "../images/ico_kakao.svg"
+import ico_naver from "../images/ico_naver.svg"
 
 const BtnContainer = styled.div`
     display: flex;

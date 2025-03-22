@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import ico_search from "../assets/images/ico_search.svg"
+import ico_search from "../images/ico_search.svg"
 
 const SForm = styled.form`
     display: flex;

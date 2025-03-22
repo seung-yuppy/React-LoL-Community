@@ -40,16 +40,16 @@ const CloseButton = styled.button`
 
 type IModal = {
     children: React.ReactNode;
-    onClick: () => void;
+    onClose: () => void;
 }
 
-const Modal = ({ children, onClick }: IModal) => {
+const Modal = ({ children, onClose }: IModal) => {
     return (
         <>
             <ModalOverlay>
                 <ModalContent>
                     {children}
-                    <CloseButton onClick={onClick}>
+                    <CloseButton onClick={onClose}>
                         Close
                     </CloseButton>
                 </ModalContent>

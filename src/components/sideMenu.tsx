@@ -1,9 +1,9 @@
 import styled from "styled-components"
 import useAuth from "../stores/useAuth";
-import { useState } from "react";
 import Modal from "./modal";
 import LoginForm from "./loginForm";
 import { useNavigate } from "react-router-dom";
+import useModal from "../hooks/useModal";
 
 const Wrapper = styled.div`
     display: flex;
@@ -49,11 +49,11 @@ const InfoMenu = styled.p`
 const SideMenu = () => {
     const navigate = useNavigate();
     const { isLogin, logout } = useAuth();
-    const [showLoginModal, setShowLoginModal] = useState<boolean>(false); // 로그인 모달 상태 관리
+    const { isOpen, openModal, closeModal } = useModal();
 
     // 로그인
     const onLogin = () => {
-        setShowLoginModal(true);
+        openModal("loginForm");
     };
 
     // 로그아웃
@@ -70,11 +70,6 @@ const SideMenu = () => {
         <>
             <Wrapper>
                 {isLogin ? <LogoutButton onClick={onLogout}>로그아웃</LogoutButton> : <LoginButton onClick={onLogin}>로그인</LoginButton>}
-                {showLoginModal &&
-                    <Modal onClick={() => setShowLoginModal(false)}>
-                        <LoginForm />
-                    </Modal>
-                }
                 <InfoBox>
                     <InfoTitle>정보</InfoTitle>
                     <InfoMenu>팁과 노하우</InfoMenu>
@@ -94,6 +89,13 @@ const SideMenu = () => {
                     <InfoMenu>LEC</InfoMenu>
                 </InfoBox>
             </Wrapper>
+
+            {/* 모달 영역 */}
+            {isOpen("loginForm") &&
+                <Modal onClose={() => closeModal("loginForm")}>
+                    <LoginForm />
+                </Modal>
+            }
         </>
     )
 }

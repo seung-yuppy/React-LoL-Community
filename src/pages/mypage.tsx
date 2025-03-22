@@ -7,7 +7,7 @@ import Modal from "../components/modal";
 import IUserInfo from "../types/userInfo";
 import IContent from "../types/content";
 import IComment from "../types/comment";
-import ico_arrow_turn_down from "../assets/images/ico_arrow_turn_down.svg";
+import ico_arrow_turn_down from "../images/ico_arrow_turn_down.svg";
 
 const Wrapper = styled.div`
     display: flex;

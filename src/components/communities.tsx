@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import useAuth from "../stores/useAuth";
-import ico_up from "../assets/images/ico_up.svg"
-import ico_down from "../assets/images/ico_down.svg";
+import ico_up from "../images/ico_up.svg"
+import ico_down from "../images/ico_down.svg";
 import IContent from "../types/content";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import useModal from "../hooks/useModal";
+import Modal from "./modal";
 
 const Wrapper = styled.div`
     display: flex;
@@ -81,28 +84,103 @@ const SearchImage = styled.img`
     object-fit: cover;
 `;
 
-type CommunitiesProps = {
-    communityList: IContent[];
-    addLike: (id: number) => void;
-}
+// type CommunitiesProps = {
+//     communityList: IContent[];
+//     addLike: (id: number) => void;
+// }
 
-const Communities = ({ communityList, addLike }: CommunitiesProps) => {
+const Communities = () => {
+    const queryClient = useQueryClient();
     const { isLogin } = useAuth();  // 로그인 상태 관리
+    const { isOpen, openModal, closeModal } = useModal();   // 모달 관리
+
+    // 커뮤니티 리스트 불러오기
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/community`, {
+                method: "GET", credentials: "include"
+            });
+            if (!response.ok) throw new Error("API 연결 오류");
+            const data = await response.json();
+            return data.content;
+        } catch (error) {
+            console.error("커뮤니티 리스트 불러오기 오류", error);
+        }
+    };
+
+    const { data: communityList, isLoading: listLoading, isError: listError } = useQuery<IContent[]>({
+        queryKey: ['communityList'],
+        queryFn: fetchData,
+        // onSuccess: (data: IContent[]) => {
+        //     setCommunityList(data);
+        // }
+    });
+
+    // 좋아요 버튼 누르기
+    // const addLike = async (id: number) => {
+    //     try {
+    //         const res = await fetch(`http://localhost:8080/community/${id}/like`, {
+    //             method: "POST",
+    //             credentials: "include",
+    //         });
+    //         const data = await res.text();
+
+    //         if (data === "이미 좋아요를 누르셨습니다.") {
+    //             openModal("dupLike");
+    //         } else if (data === "이 글을 좋아합니다.") {
+    //             openModal("like");
+    //         } else {
+    //             openModal("loginAlert");
+    //         }
+    //     } catch (error) {
+    //         console.error("좋아요 실패", error);
+    //     }
+    // };
+
+    // 좋아요 버튼 누르면 react-query의 mutation으로 업데이트하기
+    const addLike = useMutation({
+        mutationFn: async (id: number) => {
+            const res = await fetch(`http://localhost:8080/community/${id}/like`, {
+                method: "POST",
+                credentials: "include",
+            });
+            const data = await res.text();
+            return data;
+        },
+        onSuccess: (data) => {
+            if (data === "이미 좋아요를 누르셨습니다.") {
+                openModal("dupLike");
+            } else if (data === "이 글을 좋아합니다.") {
+                openModal("like");
+                queryClient.invalidateQueries({ queryKey: ["communityList"] });
+            } else {
+                openModal("loginAlert");
+            }
+        },
+        onError: (error) => {
+            console.error("좋아요 실패", error);
+        },
+    });
+
+    // useMutation을 사용하기 위한 함수
+    const handleLikeClick = (id: number) => {
+        addLike.mutate(id);
+    };
 
     return (
         <>
             <Wrapper>
                 <MainContainer>
-                    {!isLogin ? (
+                    {!isLogin && listLoading || listError ? (
                         <TableTitle>로그인 후 이용해주세요.</TableTitle>
-                    ) : communityList.length === 0 ? (
+                    ) : communityList?.length === 0 && listLoading || listError ? (
                         <TableTitle>게시글이 없습니다.</TableTitle>
                     ) : (
                         <TableBox>
-                            {communityList.slice(0, 20).map((community) => (
+                            {communityList?.slice(0, 20).map((community) => (
                                 <TableBody key={community.id}>
                                     <ButtonContainer>
-                                        <LikeButton onClick={() => addLike(community.id)}>
+                                        <LikeButton onClick={() => handleLikeClick(community.id)}>
                                             <SearchImage src={ico_up} alt="이미지 없음" />
                                         </LikeButton>
                                         {community.likesCount}
@@ -126,6 +204,18 @@ const Communities = ({ communityList, addLike }: CommunitiesProps) => {
                     )}
                 </MainContainer>
             </Wrapper >
+
+            {/* 모달 관리 */}
+            {isOpen("like") && (
+                <Modal onClose={() => closeModal("like")}>
+                    <TableTitle>이 글을 좋아합니다.❤️</TableTitle>
+                </Modal>
+            )}
+            {isOpen("dupLike") && (
+                <Modal onClose={() => closeModal("dupLike")}>
+                    <TableTitle>이 글을 이미 좋아했습니다.</TableTitle>
+                </Modal>
+            )}
         </>
     );
 }

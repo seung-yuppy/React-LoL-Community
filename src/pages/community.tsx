@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import IContent from "../types/content";
-import Communities from "../components/communities";
+// import Communities from "../components/communities";
 import Modal from "../components/modal";
 import IComment from "../types/comment";
 import useAuth from "../stores/useAuth";
-import ico_bad from "../assets/images/ico_bad.svg";
-import ico_good from "../assets/images/ico_good.svg";
+import ico_bad from "../images/ico_bad.svg";
+import ico_good from "../images/ico_good.svg";
+import useModal from "../hooks/useModal";
 
 const Wrapper = styled.div`
     display: flex;
@@ -173,18 +174,9 @@ const Community = () => {
     const navigate = useNavigate();
     const { userInfo } = useAuth();
     const { communityId } = useParams();    // 상세페이지 들어오기 위한 params
-    const [showAlertModal, setShowAlertModal] = useState<boolean>(false); // 로그인 경고창 모달 상태 관리
-    const [showLikeModal, setShowLikeModal] = useState<boolean>(false); // 좋아요 경고창 모달 상태 관리
-    const [showDupLikeModal, setShowDupLikeModal] = useState<boolean>(false); // 이미 좋아요 누른 경고창 모달 상태 관리
-    const [showCommentModal, setShowCommentModal] = useState<boolean>(false);   // 댓글 작성 완료 모달 관리
-    const [showEditCommentModal, setShowEditCommentModal] = useState<boolean>(false);   // 댓글 수정 완료 모달 관리
-    const [showDeleteCommentModal, setShowDeleteCommentModal] = useState<boolean>(false);   // 댓글 삭제 경고 모달 관리
-    const [showDeleteCommunityModal, setShowDeleteCommunityModal] = useState<boolean>(false); // 게시글 삭제 경고 모달 관리
-    const [showGoodCommentModal, setShowGoodCommentModal] = useState<boolean>(false);   // 댓글 좋아요 모달 관리
-    const [showHateCommentModal, setShowHateCommentModal] = useState<boolean>(false);   // 댓글 싫어요 모달 관리
-    const [showAlreadyCommentModal, setShowAlreadyCommentModal] = useState<boolean>(false);   // 댓글 이미 공감했어요 모달 관리
+    const { isOpen, openModal, closeModal } = useModal();  // 모달 관리
     const [communityPost, setCommunityPost] = useState<IContent>(); // 커뮤니티 글 한개
-    const [communityList, setCommunityList] = useState<IContent[]>([]); // 커뮤니티 리스트 상태 관리
+    // const [communityList, setCommunityList] = useState<IContent[]>([]); // 커뮤니티 리스트 상태 관리
     const [content, setContent] = useState<string>(""); // 댓글 작성
     const [commentList, setCommentList] = useState<IComment[]>([]); // 커뮤니티 글 한개의 댓글 목록
     const [showReplyForm, setShowReplyForm] = useState<{ [key: number]: boolean }>({}); // 대댓글 작성 폼 상태 관리
@@ -196,15 +188,19 @@ const Community = () => {
     useEffect(() => {
         // 커뮤니티 글 한 개 데이터 불러오기
         const fetchCommunity = async () => {
-            const response = await fetch(
-                `http://localhost:8080/community/${communityId}`,
-                {
-                    method: "GET",
-                    credentials: "include",
-                }
-            );
-            const data = await response.json();
-            setCommunityPost(data);
+            try {
+                const response = await fetch(
+                    `http://localhost:8080/community/${communityId}`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                );
+                const data = await response.json();
+                setCommunityPost(data);
+            } catch (error) {
+                console.error("커뮤니티 글 불러오기 오류", error)
+            }
         };
         // 커뮤니티 리스트 불러오기
         const fetchData = async () => {
@@ -213,8 +209,8 @@ const Community = () => {
                 if (!response.ok) {
                     throw new Error("API 연결 오류");
                 }
-                const data = await response.json();
-                setCommunityList(data.content);
+                // const data = await response.json();
+                // setCommunityList(data.content);
             } catch (error) {
                 console.error("커뮤니티 리스트 불러오기 오류", error);
             }
@@ -235,27 +231,27 @@ const Community = () => {
         fetchCommunity();
         fetchData();
         fetchComment();
-    }, [communityId, showCommentModal, showLikeModal, showEditCommentModal, showDeleteCommentModal, showDeleteCommunityModal, showAlreadyCommentModal, showGoodCommentModal, showHateCommentModal]);
+    }, [communityId]);
 
-    // 좋아요 버튼 누르기
-    const addLike = async (id: number) => {
-        try {
-            const res = await fetch(`http://localhost:8080/community/${id}/like`, {
-                method: "POST",
-                credentials: "include",
-            })
-            const data = await res.text();
-            if (data === "이미 좋아요를 누르셨습니다.") {
-                setShowDupLikeModal(true);
-            } else if (data === "이 글을 좋아합니다.") {
-                setShowLikeModal(true);
-            } else {
-                setShowAlertModal(true);
-            }
-        } catch (error) {
-            console.error("좋아요 실패", error);
-        }
-    };
+    // // 좋아요 버튼 누르기
+    // const addLike = async (id: number) => {
+    //     try {
+    //         const res = await fetch(`http://localhost:8080/community/${id}/like`, {
+    //             method: "POST",
+    //             credentials: "include",
+    //         })
+    //         const data = await res.text();
+    //         if (data === "이미 좋아요를 누르셨습니다.") {
+    //             openModal("dupLike");
+    //         } else if (data === "이 글을 좋아합니다.") {
+    //             openModal("like");
+    //         } else {
+    //             openModal("loginAlert");
+    //         }
+    //     } catch (error) {
+    //         console.error("좋아요 실패", error);
+    //     }
+    // };
 
     // 게시글 삭제
     const deleteCommunity = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -271,7 +267,7 @@ const Community = () => {
             navigate("/");
         } catch (error) {
             console.error("게시글 삭제 오류", error);
-            setShowDeleteCommunityModal(false);
+            openModal("deleteCommunity");
         }
     };
 
@@ -280,7 +276,7 @@ const Community = () => {
         e.preventDefault();
         try {
             if (!userInfo) {
-                setShowAlertModal(true)
+                openModal("alertLogin")
                 setContent("");
             } else if (userInfo) {
                 await fetch(`http://localhost:8080/${communityId}/comment`, {
@@ -291,7 +287,8 @@ const Community = () => {
                     body: JSON.stringify({ content }),
                     credentials: "include",
                 });
-                setShowCommentModal(true);
+                // setShowCommentModal(true);
+                openModal("comment");
                 setContent("");
             }
         } catch (error) {
@@ -313,7 +310,7 @@ const Community = () => {
         e.preventDefault();
         try {
             if (!userInfo) {
-                setShowAlertModal(true)
+                openModal("alertLogin")
                 setReply("");
             } else if (userInfo) {
                 await fetch(`http://localhost:8080/${communityId}/${parentId}/comment`, {
@@ -324,11 +321,12 @@ const Community = () => {
                     body: JSON.stringify({ content: reply }),
                     credentials: "include",
                 })
-                setShowCommentModal(true);
+                openModal("comment");
                 setShowReplyForm((prev) => ({
                     ...prev,
                     [comment.id]: false,
                 }));
+                setReply("");
             }
         } catch (error) {
             console.error("대댓글 입력 실패", error);
@@ -357,7 +355,7 @@ const Community = () => {
                 body: JSON.stringify({ content: editContent }),
                 credentials: "include",
             });
-            setShowEditCommentModal(true);
+            openModal("editComment");
             setShowEditForm((prev) => ({
                 ...prev,
                 [comment.id]: false,
@@ -369,9 +367,9 @@ const Community = () => {
 
     // 댓글 삭제 모달창 
     const toggleDelete = (comment: IComment) => {
-        setShowDeleteCommentModal(true);
+        openModal("deleteComment");
         setParentId(comment.id)
-    }
+    };
 
     // 댓글 삭제
     const deleteComment = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -381,7 +379,7 @@ const Community = () => {
                 method: "DELETE",
                 credentials: "include",
             });
-            setShowDeleteCommentModal(false);
+            openModal("deleteComment");
         } catch (error) {
             console.error("댓글 삭제 실패", error);
         }
@@ -396,9 +394,9 @@ const Community = () => {
             })
             const data = await response.text();
             if (data === "이미 공감한 댓글입니다.") {
-                setShowAlreadyCommentModal(true);
+                openModal("dupLikeComment");
             } else {
-                setShowGoodCommentModal(true);
+                openModal("likeComment");
             }
         } catch (error) {
             console.error("댓글 좋아요 실패", error);
@@ -414,9 +412,9 @@ const Community = () => {
             })
             const data = await response.text();
             if (data === "이미 공감한 댓글입니다.") {
-                setShowAlreadyCommentModal(true);
+                openModal("dupLikeComment");
             } else {
-                setShowHateCommentModal(true);
+                openModal("hateComment")
             }
         } catch (error) {
             console.error("댓글 싫어요 실패", error);
@@ -437,7 +435,7 @@ const Community = () => {
                             {communityPost.nickname === userInfo.nickname &&
                                 <ButtonContainer>
                                     <Link to={`/community/${communityPost.id}/edit`}><EditButton>수정</EditButton></Link>
-                                    <DeleteButton onClick={() => setShowDeleteCommunityModal(true)}>삭제</DeleteButton>
+                                    <DeleteButton onClick={() => openModal("deleteCommunity")}>삭제</DeleteButton>
                                 </ButtonContainer>}
                         </InfoHeader>
                         <Dynamiccontent
@@ -455,10 +453,10 @@ const Community = () => {
                             <Btn type="submit">전송</Btn>
                         </FormWrapper>
                         {/* 댓글 영역 */}
-                        {commentList.map((comment) => (
-                            <CommentBox key={comment.id}>
+                        {commentList.map((comment, index) => (
+                            <CommentBox key={index}>
                                 <CommentHeader1>
-                                    <TeamLogo />
+                                    <TeamLogo src={comment.imageUrl} alt="이미지 없음" />
                                     <HeaderContent1>{comment.nickname} | {comment.createdAt}</HeaderContent1>
                                 </CommentHeader1>
                                 {!showEditForm[comment.id] &&
@@ -514,7 +512,7 @@ const Community = () => {
                                 {comment.children && comment.children.map((reply) => (
                                     <CommentBox>
                                         <CommentHeader1>
-                                            <TeamLogo />
+                                            <TeamLogo src={reply.imageUrl} alt="이미지 없음" />
                                             <HeaderContent2>{reply.nickname} | {reply.createdAt}</HeaderContent2>
                                         </CommentHeader1>
                                         <HeaderContent1>{reply.content}</HeaderContent1>
@@ -531,8 +529,8 @@ const Community = () => {
                                     </CommentBox>
                                 ))}
                                 {/* 댓글 삭제 알림 모달 */}
-                                {showDeleteCommentModal &&
-                                    <Modal onClick={() => setShowDeleteCommentModal(false)}>
+                                {isOpen("deleteComment") &&
+                                    <Modal onClose={() => closeModal("deleteComment")}>
                                         <TableTitle>댓글을 삭제하시겠습니까?</TableTitle>
                                         <ModalDelButton onClick={(e) => deleteComment(e)}>Delete</ModalDelButton>
                                     </Modal>
@@ -542,53 +540,53 @@ const Community = () => {
                     </MainContainer>
                 )}
                 {/* 커뮤니티 목록 영역 */}
-                <Communities communityList={communityList} addLike={addLike} />
+                {/* <Communities communityList={communityList} addLike={addLike} /> */}
             </Wrapper >
 
             {/* 모달 관리 */}
-            {showAlreadyCommentModal &&
-                <Modal onClick={() => setShowAlreadyCommentModal(false)}>
+            {isOpen("dupLikeComment") &&
+                <Modal onClose={() => closeModal("dupLikeComment")}>
                     <TableTitle>이미 공감한 댓글입니다.</TableTitle>
                 </Modal>
             }
-            {showGoodCommentModal &&
-                <Modal onClick={() => setShowGoodCommentModal(false)}>
+            {isOpen("likeComment") &&
+                <Modal onClose={() => closeModal("likeComment")}>
                     <TableTitle>이 댓글을 좋아합니다.❤️</TableTitle>
                 </Modal>
             }
-            {showHateCommentModal &&
-                <Modal onClick={() => setShowHateCommentModal(false)}>
+            {isOpen("hateComment") &&
+                <Modal onClose={() => closeModal("hateComment")}>
                     <TableTitle>이 댓글을 싫어합니다.</TableTitle>
                 </Modal>
             }
-            {showDeleteCommunityModal &&
-                <Modal onClick={() => setShowDeleteCommunityModal(false)}>
+            {isOpen("deleteCommunity") &&
+                <Modal onClose={() => closeModal("deleteCommunity")}>
                     <TableTitle>게시글을 삭제하시겠습니까?</TableTitle>
                     <ModalDelButton onClick={(e) => deleteCommunity(e)}>Delete</ModalDelButton>
                 </Modal>
             }
-            {showCommentModal &&
-                <Modal onClick={() => setShowCommentModal(false)}>
+            {isOpen("comment") &&
+                <Modal onClose={() => closeModal("comment")}>
                     <TableTitle>댓글 작성이 완료 되었습니다.</TableTitle>
                 </Modal>
             }
-            {showEditCommentModal &&
-                <Modal onClick={() => setShowEditCommentModal(false)}>
+            {isOpen("editComment") &&
+                <Modal onClose={() => closeModal("editComment")}>
                     <TableTitle>댓글 수정이 완료 되었습니다.</TableTitle>
                 </Modal>
             }
-            {showLikeModal &&
-                <Modal onClick={() => setShowLikeModal(false)}>
+            {isOpen("like") &&
+                <Modal onClose={() => closeModal("like")}>
                     <TableTitle>이 글을 좋아합니다.❤️</TableTitle>
                 </Modal>
             }
-            {showDupLikeModal &&
-                <Modal onClick={() => setShowDupLikeModal(false)}>
+            {isOpen("dupLike") &&
+                <Modal onClose={() => closeModal("dupLike")}>
                     <TableTitle>이 글을 이미 좋아했습니다.</TableTitle>
                 </Modal>
             }
-            {showAlertModal &&
-                <Modal onClick={() => setShowAlertModal(false)}>
+            {isOpen("alertLogin") &&
+                <Modal onClose={() => closeModal("alertLogin")}>
                     <TableTitle>로그인 후 이용해주세요</TableTitle>
                 </Modal>
             }

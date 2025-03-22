@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import img from "../assets/images/lol.png"
+import { useEffect } from "react";
+import img from "../images/lol.png"
 import useAuth from "../stores/useAuth";
 import Modal from "./modal";
 import LoginForm from "./loginForm";
+import useModal from "../hooks/useModal";
 
 const Gnb = styled.nav`
   padding:1rem 2rem;
@@ -42,7 +43,7 @@ const HomeTitle = styled.div`
 const Header = () => {
   const navigate = useNavigate();
   const { isLogin, login, logout } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState<boolean>(false); // 로그인 모달 상태 관리
+  const { isOpen, openModal, closeModal } = useModal();
 
   useEffect(() => {
     const fetchAuth = async () => {
@@ -80,7 +81,7 @@ const Header = () => {
         <Itemlist>
           <Item><Link to="/">HOME</Link></Item>
           {!isLogin ?
-            <Item onClick={() => setShowLoginModal(true)}>
+            <Item onClick={() => openModal("loginForm")}>
               LOG IN
             </Item> :
             <>
@@ -95,8 +96,8 @@ const Header = () => {
       <HomeTitle>Welcome LoL Commnuity</HomeTitle>
 
       {/* 모달 관리 */}
-      {showLoginModal &&
-        <Modal onClick={() => setShowLoginModal(false)}>
+      {isOpen("loginForm") &&
+        <Modal onClose={() => closeModal("loginForm")}>
           <LoginForm />
         </Modal>
       }
