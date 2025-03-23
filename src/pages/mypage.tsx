@@ -301,7 +301,7 @@ const MyPage = () => {
 
       {/* 모달 관리 */}
       {showRemoveModal &&
-        <Modal onClick={() => setShowRemoveModal(false)}>
+        <Modal onClose={() => setShowRemoveModal(false)}>
           <Title>회원 탈퇴를 하시겠습니까? 계정 복구는 불가합니다.</Title>
           <ModalDelButton onClick={handleDelete}>탈퇴하기</ModalDelButton>
         </Modal>

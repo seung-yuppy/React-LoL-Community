@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import useAuth from "../stores/useAuth";
 import ico_up from "../images/ico_up.svg"
 import ico_down from "../images/ico_down.svg";
-import IContent from "../types/content";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useModal from "../hooks/useModal";
 import Modal from "./modal";
+import IContent from "../types/content";
+import fetchAddLikeCommunityList from "../services/communityList/communityListLikeService";
 
 const Wrapper = styled.div`
     display: flex;
@@ -84,69 +84,19 @@ const SearchImage = styled.img`
     object-fit: cover;
 `;
 
-// type CommunitiesProps = {
-//     communityList: IContent[];
-//     addLike: (id: number) => void;
-// }
+type ICommunityList = {
+    communityList: IContent[] | undefined;
+    isCommunityListLoading: boolean;
+    communityListError: Error | null;   // error는 Error와 null 두 상태 존재
+};
 
-const Communities = () => {
+const Communities = ({ communityList, isCommunityListLoading, communityListError }: ICommunityList) => {
     const queryClient = useQueryClient();
-    const { isLogin } = useAuth();  // 로그인 상태 관리
-    const { isOpen, openModal, closeModal } = useModal();   // 모달 관리
-
-    // 커뮤니티 리스트 불러오기
-    const fetchData = async () => {
-        try {
-            const response = await fetch(`http://localhost:8080/community`, {
-                method: "GET", credentials: "include"
-            });
-            if (!response.ok) throw new Error("API 연결 오류");
-            const data = await response.json();
-            return data.content;
-        } catch (error) {
-            console.error("커뮤니티 리스트 불러오기 오류", error);
-        }
-    };
-
-    const { data: communityList, isLoading: listLoading, isError: listError } = useQuery<IContent[]>({
-        queryKey: ['communityList'],
-        queryFn: fetchData,
-        // onSuccess: (data: IContent[]) => {
-        //     setCommunityList(data);
-        // }
-    });
-
-    // 좋아요 버튼 누르기
-    // const addLike = async (id: number) => {
-    //     try {
-    //         const res = await fetch(`http://localhost:8080/community/${id}/like`, {
-    //             method: "POST",
-    //             credentials: "include",
-    //         });
-    //         const data = await res.text();
-
-    //         if (data === "이미 좋아요를 누르셨습니다.") {
-    //             openModal("dupLike");
-    //         } else if (data === "이 글을 좋아합니다.") {
-    //             openModal("like");
-    //         } else {
-    //             openModal("loginAlert");
-    //         }
-    //     } catch (error) {
-    //         console.error("좋아요 실패", error);
-    //     }
-    // };
+    const { isOpen, openModal, closeModal } = useModal();  // 모달 관리
 
     // 좋아요 버튼 누르면 react-query의 mutation으로 업데이트하기
     const addLike = useMutation({
-        mutationFn: async (id: number) => {
-            const res = await fetch(`http://localhost:8080/community/${id}/like`, {
-                method: "POST",
-                credentials: "include",
-            });
-            const data = await res.text();
-            return data;
-        },
+        mutationFn: fetchAddLikeCommunityList,
         onSuccess: (data) => {
             if (data === "이미 좋아요를 누르셨습니다.") {
                 openModal("dupLike");
@@ -170,12 +120,8 @@ const Communities = () => {
     return (
         <>
             <Wrapper>
-                <MainContainer>
-                    {!isLogin && listLoading || listError ? (
-                        <TableTitle>로그인 후 이용해주세요.</TableTitle>
-                    ) : communityList?.length === 0 && listLoading || listError ? (
-                        <TableTitle>게시글이 없습니다.</TableTitle>
-                    ) : (
+                {!isCommunityListLoading && !communityListError &&
+                    <MainContainer>
                         <TableBox>
                             {communityList?.slice(0, 20).map((community) => (
                                 <TableBody key={community.id}>
@@ -201,8 +147,8 @@ const Communities = () => {
                                 </TableBody>
                             ))}
                         </TableBox>
-                    )}
-                </MainContainer>
+                    </MainContainer>
+                }
             </Wrapper >
 
             {/* 모달 관리 */}

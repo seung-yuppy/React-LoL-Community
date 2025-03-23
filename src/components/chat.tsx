@@ -71,17 +71,17 @@ const ChatBox = styled.div`
 `;
 
 const TableTitle = styled.h2`
-    font-size:1.5rem;
-    font-weight: bold;
+  font-size:1.5rem;
+  font-weight: bold;
 `;
 
 const TeamLogo = styled.img`
-    width: 3rem;
-    height: 3rem;
+  width: 3rem;
+  height: 3rem;
 `;
 
 const Chat = () => {
-  const { userInfo } = useAuth();
+  const { userInfo, isLogin } = useAuth();
   const [client, setClient] = useState<Client | null>(null);
   const [messages, setMessages] = useState<{ nickname: string, content: string }[]>([]);
   const [message, setMessage] = useState<string>("");
@@ -89,48 +89,52 @@ const Chat = () => {
 
   useEffect(() => {
     // SockJS를 사용한 WebSocket 연결
-    const socket = new SockJS(`http://localhost:8080/ws`, { Credential: "include" });
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 3000,
-      debug: (msg) => console.log("STOMP:", msg),
-      onConnect: () => {
-        console.log("✅ WebSocket 연결됨!");
+    if (isLogin) {
+      const socket = new SockJS(`http://localhost:8080/ws`, { Credential: "include" });
+      const stompClient = new Client({
+        webSocketFactory: () => socket,
+        reconnectDelay: 3000,
+        debug: (msg) => console.log("STOMP:", msg),
+        onConnect: () => {
+          console.log("✅ WebSocket 연결됨!");
 
-        // 서버에서 오는 메시지를 구독
-        stompClient.subscribe("/topic/chat", (message) => {
-          const receivedMessage = JSON.parse(message.body);
-          setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-        });
-      },
-      onDisconnect: () => {
-        console.log("❌ WebSocket 연결 종료됨");
-      },
-      onStompError: (error) => {
-        console.error("🚨 STOMP 에러:", error);
-      },
-    });
+          // 서버에서 오는 메시지를 구독
+          stompClient.subscribe("/topic/chat", (message) => {
+            const receivedMessage = JSON.parse(message.body);
+            setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+          });
+        },
+        onDisconnect: () => {
+          console.log("❌ WebSocket 연결 종료됨");
+        },
+        onStompError: (error) => {
+          console.error("🚨 STOMP 에러:", error);
+        },
+      });
 
-    stompClient.activate();
-    setClient(stompClient);
+      stompClient.activate();
+      setClient(stompClient);
 
-    return () => {
-      stompClient.deactivate();
-    };
+      return () => {
+        stompClient.deactivate();
+      };
+    }
   }, []);
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (userInfo && client && client.connected && message.trim()) {
-      client.publish({
-        destination: "/app/chat",
-        body: JSON.stringify({ nickname: userInfo.nickname, content: message }),
-      });
-      setMessage("");
-    } else {
-      console.error("🚨 STOMP 연결이 안 되어 있음!");
-      setShowAlertModal(true);
-      setMessage("");
+    if (isLogin) {
+      if (userInfo && client && client.connected && message.trim()) {
+        client.publish({
+          destination: "/app/chat",
+          body: JSON.stringify({ nickname: userInfo.nickname, content: message }),
+        });
+        setMessage("");
+      } else {
+        console.error("🚨 STOMP 연결이 안 되어 있음!");
+        setShowAlertModal(true);
+        setMessage("");
+      }
     }
   };
 
@@ -158,7 +162,7 @@ const Chat = () => {
 
       {/* 모달 관리 */}
       {showAlertModal &&
-        <Modal onClick={() => setShowAlertModal(false)}>
+        <Modal onClose={() => setShowAlertModal(false)}>
           <TableTitle>로그인 후 이용해주세요.</TableTitle>
         </Modal>
       }
