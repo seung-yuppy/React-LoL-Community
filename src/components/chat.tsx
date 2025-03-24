@@ -88,38 +88,45 @@ const Chat = () => {
   const [showAlertModal, setShowAlertModal] = useState<boolean>(false); // 로그인 경고창 모달 상태 관리
 
   useEffect(() => {
-    // SockJS를 사용한 WebSocket 연결
-    if (isLogin) {
-      const socket = new SockJS(`http://localhost:8080/ws`, { Credential: "include" });
-      const stompClient = new Client({
-        webSocketFactory: () => socket,
-        reconnectDelay: 3000,
-        debug: (msg) => console.log("STOMP:", msg),
-        onConnect: () => {
-          console.log("✅ WebSocket 연결됨!");
+    let stompClient: Client | null = null;
 
-          // 서버에서 오는 메시지를 구독
-          stompClient.subscribe("/topic/chat", (message) => {
-            const receivedMessage = JSON.parse(message.body);
-            setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-          });
-        },
-        onDisconnect: () => {
-          console.log("❌ WebSocket 연결 종료됨");
-        },
-        onStompError: (error) => {
-          console.error("🚨 STOMP 에러:", error);
-        },
-      });
+    const connectWebSocket = () => {
+      if (isLogin && !client) {
+        const socket = new SockJS(`http://localhost:8080/ws`, { Credential: "include" });
+        stompClient = new Client({
+          webSocketFactory: () => socket,
+          reconnectDelay: 3000,
+          debug: (msg) => console.log("STOMP:", msg),
+          onConnect: () => {
+            console.log("✅ WebSocket 연결됨!");
 
-      stompClient.activate();
-      setClient(stompClient);
+            // 서버에서 오는 메시지를 구독
+            stompClient?.subscribe("/topic/chat", (message) => {
+              const receivedMessage = JSON.parse(message.body);
+              setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+            });
+          },
+          onDisconnect: () => {
+            console.log("❌ WebSocket 연결 종료됨");
+          },
+          onStompError: (error) => {
+            console.error("🚨 STOMP 에러:", error);
+          },
+        });
 
-      return () => {
+        stompClient.activate();
+        setClient(stompClient);
+      }
+    };
+
+    connectWebSocket();
+
+    return () => {
+      if (stompClient) {
         stompClient.deactivate();
-      };
-    }
-  }, []);
+      }
+    };
+  }, [isLogin]);
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

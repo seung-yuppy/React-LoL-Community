@@ -84,13 +84,7 @@ const SearchImage = styled.img`
     object-fit: cover;
 `;
 
-type ICommunityList = {
-    communityList: IContent[] | undefined;
-    isCommunityListLoading: boolean;
-    communityListError: Error | null;   // error는 Error와 null 두 상태 존재
-};
-
-const Communities = ({ communityList, isCommunityListLoading, communityListError }: ICommunityList) => {
+const Communities = ({ communityList }: { communityList: IContent[] | undefined }) => {
     const queryClient = useQueryClient();
     const { isOpen, openModal, closeModal } = useModal();  // 모달 관리
 
@@ -120,35 +114,33 @@ const Communities = ({ communityList, isCommunityListLoading, communityListError
     return (
         <>
             <Wrapper>
-                {!isCommunityListLoading && !communityListError &&
-                    <MainContainer>
-                        <TableBox>
-                            {communityList?.slice(0, 20).map((community) => (
-                                <TableBody key={community.id}>
-                                    <ButtonContainer>
-                                        <LikeButton onClick={() => handleLikeClick(community.id)}>
-                                            <SearchImage src={ico_up} alt="이미지 없음" />
-                                        </LikeButton>
-                                        {community.likesCount}
-                                        <LikeButton>
-                                            <SearchImage src={ico_down} alt="이미지 없음" />
-                                        </LikeButton>
-                                    </ButtonContainer>
-                                    <Link to={`/community/${community.id}`}>
-                                        <BoxInfo>
-                                            <TableBodytd>
-                                                <TableTitle>{community.title} [{community.commentsCount}]</TableTitle>
-                                            </TableBodytd>
-                                            <TableBodytd>
-                                                <TableDate>조회수:{community.viewsCount} | {community.nickname}</TableDate>
-                                            </TableBodytd>
-                                        </BoxInfo>
-                                    </Link>
-                                </TableBody>
-                            ))}
-                        </TableBox>
-                    </MainContainer>
-                }
+                <MainContainer>
+                    <TableBox>
+                        {communityList?.slice(0, 20).map((community) => (
+                            <TableBody key={community.id}>
+                                <ButtonContainer>
+                                    <LikeButton onClick={() => handleLikeClick(community.id)}>
+                                        <SearchImage src={ico_up} alt="이미지 없음" />
+                                    </LikeButton>
+                                    {community.likesCount}
+                                    <LikeButton>
+                                        <SearchImage src={ico_down} alt="이미지 없음" />
+                                    </LikeButton>
+                                </ButtonContainer>
+                                <Link to={`/community/${community.id}`}>
+                                    <BoxInfo>
+                                        <TableBodytd>
+                                            <TableTitle>{community.title} [{community.commentsCount}]</TableTitle>
+                                        </TableBodytd>
+                                        <TableBodytd>
+                                            <TableDate>조회수:{community.viewsCount} | {community.nickname}</TableDate>
+                                        </TableBodytd>
+                                    </BoxInfo>
+                                </Link>
+                            </TableBody>
+                        ))}
+                    </TableBox>
+                </MainContainer>
             </Wrapper >
 
             {/* 모달 관리 */}

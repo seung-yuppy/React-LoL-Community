@@ -21,27 +21,58 @@ const Img = styled.img`
 `;
 
 const LoginForm = () => {
-    const { login } = useAuth();
+    const { login, setInfo } = useAuth();
+
+    // 유저 정보를 가져오는 함수
+    const fetchUserInfo = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/info`, {
+                method: "GET",
+                credentials: "include",
+            });
+            const data = await response.json();
+            console.log(data);
+            setInfo(data.nickname);
+        } catch (error) {
+            console.error("유저 정보 가져오기 실패:", error);
+        }
+    };
 
     // 구글 로그인 사이트 이동
-    const googleOnclick = () => {
-        window.location.href =
-            "http://localhost:8080/oauth2/authorization/google";
-        login();
+    const googleOnclick = async () => {
+        try {
+            const currentUrl = window.location.href;
+            // 로그인 후 현재 페이지로 돌아오도록 state 파라미터 추가
+            window.location.href = `http://localhost:8080/oauth2/authorization/google?state=${encodeURIComponent(currentUrl)}`;
+            login();
+            await fetchUserInfo(); // 로그인 후 유저 정보 가져오기
+        } catch (error) {
+            console.error("로그인 실패:", error);
+        }
     };
 
     // 네이버 로그인 사이트 이동
-    const naverOnclick = () => {
-        window.location.href =
-            "http://localhost:8080/oauth2/authorization/naver";
-        login();
+    const naverOnclick = async () => {
+        try {
+            const currentUrl = window.location.href;
+            window.location.href = `http://localhost:8080/oauth2/authorization/naver?state=${encodeURIComponent(currentUrl)}`;
+            login();
+            await fetchUserInfo();
+        } catch (error) {
+            console.error("로그인 실패:", error);
+        }
     };
 
     // 카카오 로그인 사이트 이동
-    const kakaoOnclick = () => {
-        window.location.href =
-            "http://localhost:8080/oauth2/authorization/kakao";
-        login();
+    const kakaoOnclick = async () => {
+        try {
+            const currentUrl = window.location.href;
+            window.location.href = `http://localhost:8080/oauth2/authorization/kakao?state=${encodeURIComponent(currentUrl)}`;
+            login();
+            await fetchUserInfo();
+        } catch (error) {
+            console.error("로그인 실패:", error);
+        }
     };
 
     return (

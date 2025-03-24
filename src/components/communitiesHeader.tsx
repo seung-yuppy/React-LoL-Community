@@ -54,74 +54,29 @@ const TableTitle = styled.h2`
 
 const CommunitiesHeader = ({
     onFilter,
-    // onSearch,
+    onSearch,
 }: {
     onFilter: (filterType: string) => void;
-    // onSearch: (searchQuery: string) => void;
+    onSearch: (searchQuery: string) => void;
 }) => {
     const { isLogin, userInfo } = useAuth();
     const { isOpen, openModal, closeModal } = useModal();
-
-    // // 최신순으로 정렬
-    // const handleRecent = async () => {
-    //     if (!isLogin) return openModal("loginAlert");;
-    //     try {
-    //         const response = await fetch(`http://localhost:8080/community`, {
-    //             method: "GET", credentials: "include"
-    //         });
-    //         if (!response.ok) throw new Error("API 연결 오류");
-    //         const data = await response.json();
-    //         return data.content;
-    //     } catch (error) {
-    //         console.error("커뮤니티 리스트 불러오기 오류", error);
-    //     }
-    // };
-
-    // // 인기순으로 정렬
-    // const handlePopularity = async () => {
-    //     if (!isLogin) return openModal("loginAlert");;
-    //     try {
-    //         const response = await fetch(`http://localhost:8080/community/popularity`, {
-    //             method: "GET", credentials: "include"
-    //         });
-    //         if (!response.ok) throw new Error("API 연결 오류");
-    //         const data = await response.json();
-    //         return data.content;
-    //     } catch (error) {
-    //         console.error("10추 정렬 오류", error);
-    //     }
-    // };
-
-    // 검색 폼 처리
-    const handleSearchForm = async (search: string) => {
-        if (!isLogin) return openModal("loginAlert");;
-        try {
-            const response = await fetch(`http://localhost:8080/community/search/${search}`, {
-                method: "GET", credentials: "include"
-            });
-            if (!response.ok) throw new Error("API 연결 오류");
-            const data = await response.json();
-            return data.content;
-        } catch (error) {
-            console.error("검색 오류", error);
-        }
-    };
 
     const handleFilterClick = (filterType: string) => {
         if (!isLogin) {
             openModal("loginAlert");
             return;
         }
-        onFilter(filterType); // 부모 컴포넌트에 필터 타입 전달
+        onFilter(filterType);
     };
 
-    // const handleSearchSubmit = (searchQuery: string) => {
-    //     if (!isLogin) {
-    //         openModal("loginAlert");
-    //         return;
-    //     }
-    //     onSearch(searchQuery); // 부모 컴포넌트에 검색어 전달
-    // };
+    const handleSearchSubmit = (searchQuery: string) => {
+        if (!isLogin) {
+            openModal("loginAlert");
+            return;
+        }
+        onSearch(searchQuery);
+    };
 
     return (
         <>
@@ -131,13 +86,10 @@ const CommunitiesHeader = ({
                 </WriteBtnBox>
                 <TableHeader>
                     <FilterBtnContainer>
-                        {/* <FilterBtn onClick={handleRecent}>최신</FilterBtn>
-                        <FilterBtn onClick={handlePopularity}>10추</FilterBtn> */}
                         <FilterBtn onClick={() => handleFilterClick("recent")}>최신</FilterBtn>
                         <FilterBtn onClick={() => handleFilterClick("popularity")}>10추</FilterBtn>
                     </FilterBtnContainer>
-                    <SearchForm onSendSearch={handleSearchForm} />
-                    {/* <SearchForm onSendSearch={handleSearchSubmit} /> */}
+                    <SearchForm onSendSearch={handleSearchSubmit} />
                 </TableHeader>
             </HeaderContainer>
 

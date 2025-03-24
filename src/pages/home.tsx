@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import useCommunityList from "../hooks/useCommunityList";
 import NoLogin from "./noLogin";
 import useCommunityPopularList from "../hooks/useCommuityPopularList";
+import useCommunitySearchList from "../hooks/useCommunitySearchList";
 
 const CommunityWrapper = styled.div`
     display: flex;
@@ -15,52 +16,74 @@ const CommunityWrapper = styled.div`
     width: 60rem;
 `;
 
+const LoadingWrapper = styled.div`
+    display: flex;
+    font-size: 1.5rem;
+    font-weight: bold;
+`;
+
 const Home = () => {
-    const { isLogin, setInfo } = useAuth(); // userInfo에 값을 넣기 위해서 useEffect와 만들었다
-    const { data: communityList, isLoading: isCommunityListLoading, error: communityListError } = useCommunityList();
-    const { data: communityPopularList } = useCommunityPopularList();
+    const { isLogin, userInfo, setInfo } = useAuth(); // userInfo에 값을 넣기 위해서 useEffect와 만들었다
+    const { data: communityList, isLoading: isCommunityListLoading } = useCommunityList();
+    const { data: communityPopularList, isLoading: isCommunityPopularListLoading } = useCommunityPopularList();
+    const [searchQuery, setSearchQuery] = useState("");
+    const { data: communitySearchList, isLoading: isCommunitySearchListLoading } = useCommunitySearchList(searchQuery);
     const [filteredList, setFilteredList] = useState(communityList);
 
-    useEffect(() => {
-        // 유저 상세 정보 불러오기(닉네임 생성 & myTeam 생성 이후)
-        const fetchUserInfo = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/info`, {
-                    method: "GET",
-                    credentials: "include",
-                });
-                const data = await response.json();
-                setInfo({ nickname: data.nickname });
-            } catch (error) {
-                console.error("유저 상세 정보 불러오기 실패", error);
-            }
-        };
-        fetchUserInfo();
+    console.log(userInfo);
 
-        if (communityList) {
-            setFilteredList(communityList); // 최신순 데이터를 기본값으로 설정
-        };
-    }, [setInfo, communityList]);
+    useEffect(() => {
+        if (isLogin) {
+            const fetchUserInfo = async () => {
+                try {
+                    const response = await fetch(`http://localhost:8080/info`, {
+                        method: "GET",
+                        credentials: "include",
+                    });
+                    const data = await response.json();
+                    setInfo({ nickname: data.nickname });
+                } catch (error) {
+                    console.error("유저 정보 가져오기 실패:", error);
+                }
+            };
+            fetchUserInfo();
+        }
+    }, [isLogin, setInfo]);
+
+    useEffect(() => {
+        if (searchQuery && communitySearchList) {
+            setFilteredList(communitySearchList);
+        } else if (communityList) {
+            setFilteredList(communityList);
+        }
+    }, [communityList, communitySearchList, searchQuery]);
 
     const handleFilter = (filterType: string) => {
         if (filterType === "recent") {
-            // 최신순 데이터 처리
-            setFilteredList(communityList); // 최신순 데이터로 설정
+            setFilteredList(communityList);
         } else if (filterType === "popularity") {
-            // 인기순 데이터 처리
-            setFilteredList(communityPopularList); // 인기순 데이터로 설정
+            setFilteredList(communityPopularList);
         }
+    };
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
     };
 
     return (
         <>
             <CommunityWrapper>
-                <CommunitiesHeader onFilter={handleFilter} />
-                {isLogin ?
-                    <Communities communityList={filteredList} isCommunityListLoading={isCommunityListLoading} communityListError={communityListError} />
-                    :
-                    <NoLogin />
+                <CommunitiesHeader onFilter={handleFilter} onSearch={handleSearch} />
+                {isCommunityListLoading || isCommunityPopularListLoading || isCommunitySearchListLoading &&
+                    <LoadingWrapper>
+                        로딩중입니다....
+                    </LoadingWrapper>
                 }
+                {isLogin ? (
+                    <Communities communityList={filteredList} />
+                ) : (
+                    <NoLogin />
+                )}
             </CommunityWrapper>
         </>
     );

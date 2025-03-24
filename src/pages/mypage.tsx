@@ -173,6 +173,7 @@ const MyPage = () => {
           credentials: "include",
         });
         const infoData = await response.json();
+        console.log(infoData);
         setUserInfo(infoData);
       } catch (error) {
         console.error("유저 상세 정보 불러오기 실패", error);

@@ -28,11 +28,7 @@ const SImage = styled.img`
 
 const SButton = styled.button``;
 
-type ISearchForm = {
-    onSendSearch: (search: string) => void;
-}
-
-const SearchForm = ({ onSendSearch }: ISearchForm) => {
+const SearchForm = ({ onSendSearch }: { onSendSearch: (search: string) => void; }) => {
     const [search, setSearch] = useState("");
 
     // 게시글 검색 폼
