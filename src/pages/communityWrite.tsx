@@ -140,7 +140,7 @@ const CommunityWrite = () => {
 
       {/* 모달 관리 */}
       {showConfirmModal &&
-        <Modal onClick={() => { setShowConfirmModal(false); navigate("/") }}>
+        <Modal onClose={() => { setShowConfirmModal(false); navigate("/") }}>
           <Title> 글 등록을 완료하였습니다.</Title >
         </Modal >
       }

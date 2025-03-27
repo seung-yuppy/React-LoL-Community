@@ -19,7 +19,6 @@ const Wrapper = styled.div`
 const MainContainer = styled.div`
     display: flex;
     align-items: center;
-    justify-content: center;
     flex-direction: column;
     height: 42rem;
     border: 1px solid #333;
@@ -38,10 +37,10 @@ const TableBox = styled.ul`
 const TableBody = styled.li`
     display: flex;
     justify-content: flex-start;
+    align-items: center;
     font-size: 1.2rem;
     padding: 1rem;
-    width: 45rem;
-    gap: 5rem;
+    gap: 10rem;
     transition: color 0.3s;
     border-bottom: 1px solid gray;
 `;
@@ -84,6 +83,17 @@ const SearchImage = styled.img`
     object-fit: cover;
 `;
 
+const ImgBox = styled.div`
+    
+`;
+
+const Thumbnail = styled.div`
+    img {
+        width:7rem;
+        height: 5rem;
+    }
+`;
+
 const Communities = ({ communityList }: { communityList: IContent[] | undefined }) => {
     const queryClient = useQueryClient();
     const { isOpen, openModal, closeModal } = useModal();  // 모달 관리
@@ -111,6 +121,8 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
         addLike.mutate(id);
     };
 
+    console.log(communityList);
+
     return (
         <>
             <Wrapper>
@@ -137,6 +149,13 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
                                         </TableBodytd>
                                     </BoxInfo>
                                 </Link>
+                                {community.content.includes("<figure") &&
+                                    <ImgBox>
+                                        <Thumbnail dangerouslySetInnerHTML={{
+                                            __html: community.content.match(/<figure.*?<\/figure>/s)?.[0] || '',
+                                        }} />
+                                    </ImgBox>
+                                }
                             </TableBody>
                         ))}
                     </TableBox>

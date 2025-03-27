@@ -99,7 +99,7 @@ const CommentBox = styled.div`
     display:flex;
     flex-direction: column;
     gap: 1rem;
-    border-bottom:1px solid lightgray;
+    border-bottom: 1px solid lightgray;
     padding: 1rem;
 `;
 
@@ -170,6 +170,15 @@ const GoodBox = styled.div`
 const GoodBtn = styled.button`
 `;
 
+const CommentFilterBox = styled.div`
+    display: flex;
+    gap: 1rem;
+`;
+
+const CommentFilterButton = styled.button`
+    font-size: 1.2rem;
+`;
+
 const Community = () => {
     const navigate = useNavigate();
     const { userInfo } = useAuth();
@@ -218,7 +227,7 @@ const Community = () => {
         // 댓글 목록 불러오기
         const fetchComment = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/${communityId}/comment`, {
+                const response = await fetch(`http://localhost:8080/${communityId}/comment/popularity`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -231,7 +240,7 @@ const Community = () => {
         fetchCommunity();
         fetchData();
         fetchComment();
-    }, [communityId]);
+    }, [communityId, setCommentList]);
 
     // // 좋아요 버튼 누르기
     // const addLike = async (id: number) => {
@@ -379,7 +388,7 @@ const Community = () => {
                 method: "DELETE",
                 credentials: "include",
             });
-            openModal("deleteComment");
+            closeModal("deleteComment");
         } catch (error) {
             console.error("댓글 삭제 실패", error);
         }
@@ -421,6 +430,34 @@ const Community = () => {
         }
     };
 
+    // 댓글 인기순 정렬
+    const popularCommentList = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/${communityId}/comment/popularity`, {
+                method: "GET",
+                credentials: "include",
+            });
+            const data = await response.json();
+            setCommentList(data);
+        } catch (error) {
+            console.error("댓글 인기순 정렬 오류", error);
+        }
+    };
+
+    // 댓글 최신순 정렬
+    const recentCommentList = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/${communityId}/comment`, {
+                method: "GET",
+                credentials: "include",
+            });
+            const data = await response.json();
+            setCommentList(data);
+        } catch (error) {
+            console.error("댓글 최신순 정렬 오류", error);
+        }
+    }
+
     return (
         <>
             <Wrapper>
@@ -443,6 +480,7 @@ const Community = () => {
                                 __html: communityPost.content,
                             }}
                         />
+                        {/* 댓글 작성 영역 */}
                         <FormWrapper onSubmit={postComment}>
                             <UsernameInput
                                 type="text"
@@ -452,6 +490,13 @@ const Community = () => {
                             />
                             <Btn type="submit">전송</Btn>
                         </FormWrapper>
+
+                        {commentList.length !== 0 &&
+                            <CommentFilterBox>
+                                <CommentFilterButton onClick={recentCommentList}>최신순</CommentFilterButton>
+                                <CommentFilterButton onClick={popularCommentList}>인기순</CommentFilterButton>
+                            </CommentFilterBox>
+                        }
                         {/* 댓글 영역 */}
                         {commentList.map((comment, index) => (
                             <CommentBox key={index}>
