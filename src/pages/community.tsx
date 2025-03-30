@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import IContent from "../types/content";
-// import Communities from "../components/communities";
 import Modal from "../components/modal";
 import IComment from "../types/comment";
 import useAuth from "../stores/useAuth";
 import ico_bad from "../images/ico_bad.svg";
 import ico_good from "../images/ico_good.svg";
 import useModal from "../hooks/useModal";
+import useCommunity from "../hooks/community/useCommunity";
+import useCommentList from "../hooks/comment/useCommentList";
+// import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Wrapper = styled.div`
     display: flex;
@@ -170,97 +171,32 @@ const GoodBox = styled.div`
 const GoodBtn = styled.button`
 `;
 
-const CommentFilterBox = styled.div`
-    display: flex;
-    gap: 1rem;
-`;
+// const CommentFilterBox = styled.div`
+//     display: flex;
+//     gap: 1rem;
+// `;
 
-const CommentFilterButton = styled.button`
-    font-size: 1.2rem;
-`;
+// const CommentFilterButton = styled.button`
+//     font-size: 1.2rem;
+// `;
 
 const Community = () => {
+    // const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { userInfo } = useAuth();
     const { communityId } = useParams();    // 상세페이지 들어오기 위한 params
     const { isOpen, openModal, closeModal } = useModal();  // 모달 관리
-    const [communityPost, setCommunityPost] = useState<IContent>(); // 커뮤니티 글 한개
-    // const [communityList, setCommunityList] = useState<IContent[]>([]); // 커뮤니티 리스트 상태 관리
+    // const [communityPost, setCommunityPost] = useState<IContent>(); // 커뮤니티 글 한개
     const [content, setContent] = useState<string>(""); // 댓글 작성
-    const [commentList, setCommentList] = useState<IComment[]>([]); // 커뮤니티 글 한개의 댓글 목록
+    // const [commentList, setCommentList] = useState<IComment[]>([]); // 커뮤니티 글 한개의 댓글 목록
     const [showReplyForm, setShowReplyForm] = useState<{ [key: number]: boolean }>({}); // 대댓글 작성 폼 상태 관리
     const [reply, setReply] = useState<string>(""); // 대댓글 작성
     const [parentId, setParentId] = useState<number>(); // 대댓글 작성을 위한 댓글의 id
     const [showEditForm, setShowEditForm] = useState<{ [key: number]: boolean }>({});  // 댓글 수정 폼 상태 관리
     const [editContent, setEditContent] = useState<string>("");
 
-    useEffect(() => {
-        // 커뮤니티 글 한 개 데이터 불러오기
-        const fetchCommunity = async () => {
-            try {
-                const response = await fetch(
-                    `http://localhost:8080/community/${communityId}`,
-                    {
-                        method: "GET",
-                        credentials: "include",
-                    }
-                );
-                const data = await response.json();
-                setCommunityPost(data);
-            } catch (error) {
-                console.error("커뮤니티 글 불러오기 오류", error)
-            }
-        };
-        // 커뮤니티 리스트 불러오기
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/community`, { method: "GET", credentials: "include" });
-                if (!response.ok) {
-                    throw new Error("API 연결 오류");
-                }
-                // const data = await response.json();
-                // setCommunityList(data.content);
-            } catch (error) {
-                console.error("커뮤니티 리스트 불러오기 오류", error);
-            }
-        };
-        // 댓글 목록 불러오기
-        const fetchComment = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/${communityId}/comment/popularity`, {
-                    method: "GET",
-                    credentials: "include",
-                });
-                const data = await response.json();
-                setCommentList(data);
-            } catch (error) {
-                console.error("댓글 불러오기 오류", error)
-            }
-        }
-        fetchCommunity();
-        fetchData();
-        fetchComment();
-    }, [communityId, setCommentList]);
-
-    // // 좋아요 버튼 누르기
-    // const addLike = async (id: number) => {
-    //     try {
-    //         const res = await fetch(`http://localhost:8080/community/${id}/like`, {
-    //             method: "POST",
-    //             credentials: "include",
-    //         })
-    //         const data = await res.text();
-    //         if (data === "이미 좋아요를 누르셨습니다.") {
-    //             openModal("dupLike");
-    //         } else if (data === "이 글을 좋아합니다.") {
-    //             openModal("like");
-    //         } else {
-    //             openModal("loginAlert");
-    //         }
-    //     } catch (error) {
-    //         console.error("좋아요 실패", error);
-    //     }
-    // };
+    const { data: communityPost } = useCommunity(communityId ?? ''); // communityId가 undefined일 때 빈 문자열로 처리
+    const { data: commentList } = useCommentList(communityId ?? '');
 
     // 게시글 삭제
     const deleteCommunity = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -430,33 +366,33 @@ const Community = () => {
         }
     };
 
-    // 댓글 인기순 정렬
-    const popularCommentList = async () => {
-        try {
-            const response = await fetch(`http://localhost:8080/${communityId}/comment/popularity`, {
-                method: "GET",
-                credentials: "include",
-            });
-            const data = await response.json();
-            setCommentList(data);
-        } catch (error) {
-            console.error("댓글 인기순 정렬 오류", error);
-        }
-    };
+    // // 댓글 인기순 정렬
+    // const popularCommentList = async () => {
+    //     try {
+    //         const response = await fetch(`http://localhost:8080/${communityId}/comment/popularity`, {
+    //             method: "GET",
+    //             credentials: "include",
+    //         });
+    //         const data = await response.json();
+    //         setCommentList(data);
+    //     } catch (error) {
+    //         console.error("댓글 인기순 정렬 오류", error);
+    //     }
+    // };
 
-    // 댓글 최신순 정렬
-    const recentCommentList = async () => {
-        try {
-            const response = await fetch(`http://localhost:8080/${communityId}/comment`, {
-                method: "GET",
-                credentials: "include",
-            });
-            const data = await response.json();
-            setCommentList(data);
-        } catch (error) {
-            console.error("댓글 최신순 정렬 오류", error);
-        }
-    }
+    // // 댓글 최신순 정렬
+    // const recentCommentList = async () => {
+    //     try {
+    //         const response = await fetch(`http://localhost:8080/${communityId}/comment`, {
+    //             method: "GET",
+    //             credentials: "include",
+    //         });
+    //         const data = await response.json();
+    //         setCommentList(data);
+    //     } catch (error) {
+    //         console.error("댓글 최신순 정렬 오류", error);
+    //     }
+    // };
 
     return (
         <>
@@ -491,14 +427,14 @@ const Community = () => {
                             <Btn type="submit">전송</Btn>
                         </FormWrapper>
 
-                        {commentList.length !== 0 &&
+                        {/* {commentList.length !== 0 &&
                             <CommentFilterBox>
                                 <CommentFilterButton onClick={recentCommentList}>최신순</CommentFilterButton>
                                 <CommentFilterButton onClick={popularCommentList}>인기순</CommentFilterButton>
                             </CommentFilterBox>
-                        }
+                        } */}
                         {/* 댓글 영역 */}
-                        {commentList.map((comment, index) => (
+                        {commentList?.map((comment, index) => (
                             <CommentBox key={index}>
                                 <CommentHeader1>
                                     <TeamLogo src={comment.imageUrl} alt="이미지 없음" />

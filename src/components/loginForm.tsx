@@ -42,10 +42,9 @@ const LoginForm = () => {
     const googleOnclick = async () => {
         try {
             const currentUrl = window.location.href;
-            // 로그인 후 현재 페이지로 돌아오도록 state 파라미터 추가
             window.location.href = `http://localhost:8080/oauth2/authorization/google?state=${encodeURIComponent(currentUrl)}`;
             login();
-            await fetchUserInfo(); // 로그인 후 유저 정보 가져오기
+            await fetchUserInfo();
         } catch (error) {
             console.error("로그인 실패:", error);
         }

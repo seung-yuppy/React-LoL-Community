@@ -3,10 +3,10 @@ import CommunitiesHeader from "../components/communitiesHeader";
 import Communities from "../components/communities";
 import useAuth from "../stores/useAuth";
 import { useEffect, useState } from "react";
-import useCommunityList from "../hooks/useCommunityList";
+import useCommunityList from "../hooks/communityList/useCommunityList";
 import NoLogin from "./noLogin";
-import useCommunityPopularList from "../hooks/useCommuityPopularList";
-import useCommunitySearchList from "../hooks/useCommunitySearchList";
+import useCommunityPopularList from "../hooks/communityList/useCommuityPopularList";
+import useCommunitySearchList from "../hooks/communityList/useCommunitySearchList";
 
 const CommunityWrapper = styled.div`
     display: flex;
@@ -23,14 +23,12 @@ const LoadingWrapper = styled.div`
 `;
 
 const Home = () => {
-    const { isLogin, userInfo, setInfo } = useAuth(); // userInfo에 값을 넣기 위해서 useEffect와 만들었다
+    const { isLogin, setInfo } = useAuth(); // userInfo에 값을 넣기 위해서 useEffect와 만들었다
     const { data: communityList, isLoading: isCommunityListLoading } = useCommunityList();
     const { data: communityPopularList, isLoading: isCommunityPopularListLoading } = useCommunityPopularList();
     const [searchQuery, setSearchQuery] = useState("");
     const { data: communitySearchList, isLoading: isCommunitySearchListLoading } = useCommunitySearchList(searchQuery);
     const [filteredList, setFilteredList] = useState(communityList);
-
-    console.log(userInfo);
 
     useEffect(() => {
         if (isLogin) {

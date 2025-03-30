@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
-import IContent from "../types/content"
-import fetchSearchCommunityList from "../services/communityList/communitySearchListService";
+import IContent from "../../types/content"
+import fetchSearchCommunityList from "../../services/communityList/communitySearchListService";
 
 const useCommunitySearchList = (search: string) => {
   return useQuery<IContent[]>({
