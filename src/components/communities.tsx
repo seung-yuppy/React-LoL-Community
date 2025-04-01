@@ -13,7 +13,6 @@ const Wrapper = styled.div`
     flex-direction: column;
     gap: 1rem;
     height: 50rem;
-    width: 60rem;
 `;
 
 const MainContainer = styled.div`
@@ -120,8 +119,6 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
     const handleLikeClick = (id: number) => {
         addLike.mutate(id);
     };
-
-    console.log(communityList);
 
     return (
         <>

@@ -9,7 +9,8 @@ import ico_good from "../images/ico_good.svg";
 import useModal from "../hooks/useModal";
 import useCommunity from "../hooks/community/useCommunity";
 import useCommentList from "../hooks/comment/useCommentList";
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import useCommentRecentList from "../hooks/comment/useCommentRecentList";
 
 const Wrapper = styled.div`
     display: flex;
@@ -171,32 +172,32 @@ const GoodBox = styled.div`
 const GoodBtn = styled.button`
 `;
 
-// const CommentFilterBox = styled.div`
-//     display: flex;
-//     gap: 1rem;
-// `;
+const CommentFilterBox = styled.div`
+    display: flex;
+    gap: 1rem;
+`;
 
-// const CommentFilterButton = styled.button`
-//     font-size: 1.2rem;
-// `;
+const CommentFilterButton = styled.button`
+    font-size: 1.2rem;
+`;
 
 const Community = () => {
-    // const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { userInfo } = useAuth();
     const { communityId } = useParams();    // 상세페이지 들어오기 위한 params
     const { isOpen, openModal, closeModal } = useModal();  // 모달 관리
-    // const [communityPost, setCommunityPost] = useState<IContent>(); // 커뮤니티 글 한개
     const [content, setContent] = useState<string>(""); // 댓글 작성
-    // const [commentList, setCommentList] = useState<IComment[]>([]); // 커뮤니티 글 한개의 댓글 목록
     const [showReplyForm, setShowReplyForm] = useState<{ [key: number]: boolean }>({}); // 대댓글 작성 폼 상태 관리
     const [reply, setReply] = useState<string>(""); // 대댓글 작성
     const [parentId, setParentId] = useState<number>(); // 대댓글 작성을 위한 댓글의 id
     const [showEditForm, setShowEditForm] = useState<{ [key: number]: boolean }>({});  // 댓글 수정 폼 상태 관리
     const [editContent, setEditContent] = useState<string>("");
+    const [filterType, setFilterType] = useState<string>("popular");
 
-    const { data: communityPost } = useCommunity(communityId ?? ''); // communityId가 undefined일 때 빈 문자열로 처리
-    const { data: commentList } = useCommentList(communityId ?? '');
+    const { data: communityPost } = useCommunity(communityId ?? ""); // communityId가 undefined일 때 빈 문자열로 처리
+    const { data: commentList } = useCommentList(communityId ?? "");
+    const { data: commentRecentList } = useCommentRecentList(communityId ?? "");
 
     // 게시글 삭제
     const deleteCommunity = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -235,6 +236,7 @@ const Community = () => {
                 // setShowCommentModal(true);
                 openModal("comment");
                 setContent("");
+                queryClient.invalidateQueries({ queryKey: ["comment"] });
             }
         } catch (error) {
             console.error("댓글 입력 실패", error);
@@ -272,6 +274,7 @@ const Community = () => {
                     [comment.id]: false,
                 }));
                 setReply("");
+                queryClient.invalidateQueries({ queryKey: ["comment"] });
             }
         } catch (error) {
             console.error("대댓글 입력 실패", error);
@@ -305,6 +308,7 @@ const Community = () => {
                 ...prev,
                 [comment.id]: false,
             }));
+            queryClient.invalidateQueries({ queryKey: ["comment"] });
         } catch (error) {
             console.error("댓글 수정 실패", error);
         }
@@ -325,6 +329,7 @@ const Community = () => {
                 credentials: "include",
             });
             closeModal("deleteComment");
+            queryClient.invalidateQueries({ queryKey: ["comment"] });
         } catch (error) {
             console.error("댓글 삭제 실패", error);
         }
@@ -342,6 +347,7 @@ const Community = () => {
                 openModal("dupLikeComment");
             } else {
                 openModal("likeComment");
+                queryClient.invalidateQueries({ queryKey: ["comment"] });
             }
         } catch (error) {
             console.error("댓글 좋아요 실패", error);
@@ -359,40 +365,22 @@ const Community = () => {
             if (data === "이미 공감한 댓글입니다.") {
                 openModal("dupLikeComment");
             } else {
-                openModal("hateComment")
+                openModal("hateComment");
+                queryClient.invalidateQueries({ queryKey: ["comment"] });
             }
         } catch (error) {
             console.error("댓글 싫어요 실패", error);
         }
     };
 
-    // // 댓글 인기순 정렬
-    // const popularCommentList = async () => {
-    //     try {
-    //         const response = await fetch(`http://localhost:8080/${communityId}/comment/popularity`, {
-    //             method: "GET",
-    //             credentials: "include",
-    //         });
-    //         const data = await response.json();
-    //         setCommentList(data);
-    //     } catch (error) {
-    //         console.error("댓글 인기순 정렬 오류", error);
-    //     }
-    // };
-
-    // // 댓글 최신순 정렬
-    // const recentCommentList = async () => {
-    //     try {
-    //         const response = await fetch(`http://localhost:8080/${communityId}/comment`, {
-    //             method: "GET",
-    //             credentials: "include",
-    //         });
-    //         const data = await response.json();
-    //         setCommentList(data);
-    //     } catch (error) {
-    //         console.error("댓글 최신순 정렬 오류", error);
-    //     }
-    // };
+    // 댓글 필터링 함수
+    const getFilteredComments = () => {
+        if (filterType === "recent") {
+            return commentRecentList;
+        } else {
+            return commentList;
+        }
+    };
 
     return (
         <>
@@ -427,14 +415,14 @@ const Community = () => {
                             <Btn type="submit">전송</Btn>
                         </FormWrapper>
 
-                        {/* {commentList.length !== 0 &&
+                        {getFilteredComments()?.length !== 0 &&
                             <CommentFilterBox>
-                                <CommentFilterButton onClick={recentCommentList}>최신순</CommentFilterButton>
-                                <CommentFilterButton onClick={popularCommentList}>인기순</CommentFilterButton>
+                                <CommentFilterButton onClick={() => setFilterType("recent")}>최신순</CommentFilterButton>
+                                <CommentFilterButton onClick={() => setFilterType("popular")}>인기순</CommentFilterButton>
                             </CommentFilterBox>
-                        } */}
+                        }
                         {/* 댓글 영역 */}
-                        {commentList?.map((comment, index) => (
+                        {getFilteredComments()?.map((comment, index) => (
                             <CommentBox key={index}>
                                 <CommentHeader1>
                                     <TeamLogo src={comment.imageUrl} alt="이미지 없음" />

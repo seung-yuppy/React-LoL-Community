@@ -105,6 +105,10 @@ const Chat = () => {
               const receivedMessage = JSON.parse(message.body);
               setMessages((prevMessages) => [...prevMessages, receivedMessage]);
             });
+            // stompClient?.subscribe(`/topic/notifications/${userInfo.nickname}`, (message) => {
+            //   const receivedMessage = JSON.parse(message.body);
+            //   setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+            // })
           },
           onDisconnect: () => {
             console.log("❌ WebSocket 연결 종료됨");

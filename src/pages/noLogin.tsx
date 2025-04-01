@@ -5,7 +5,7 @@ const Wrapper = styled.div`
     flex-direction: column;
     gap: 1rem;
     height: 50rem;
-    width: 60rem;
+    width: 55rem;
 `;
 
 const MainContainer = styled.div`
