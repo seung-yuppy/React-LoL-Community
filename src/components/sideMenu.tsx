@@ -33,6 +33,8 @@ const LogoutButton = styled(LoginButton)`
 const InfoBox = styled.div`
     padding: 1rem 0;
     border-bottom:1px solid gray;
+    display: flex;
+    flex-direction: column;
 `;
 
 const InfoTitle = styled.h2`
@@ -41,12 +43,12 @@ const InfoTitle = styled.h2`
     padding: 1rem 0;
 `;
 
-const InfoMenu = styled.p`
+const InfoMenu = styled.button`
     font-size: 1rem;
     padding: 1rem 0.3rem;
 `;
 
-const SideMenu = () => {
+const SideMenu = ({ onFilter }: { onFilter: (filterType: string) => void; }) => {
     const navigate = useNavigate();
     const { isLogin, logout } = useAuth();
     const { isOpen, openModal, closeModal } = useModal();
@@ -66,27 +68,25 @@ const SideMenu = () => {
         logout();
     };
 
+    const handleFilterClick = (filterType: string) => {
+        onFilter(filterType);
+    };
+
     return (
         <>
             <Wrapper>
                 {isLogin ? <LogoutButton onClick={onLogout}>로그아웃</LogoutButton> : <LoginButton onClick={onLogin}>로그인</LoginButton>}
                 <InfoBox>
                     <InfoTitle>정보</InfoTitle>
-                    <InfoMenu>팁과 노하우</InfoMenu>
-                    <InfoMenu>패치노트</InfoMenu>
+                    <InfoMenu onClick={() => handleFilterClick("팁과 노하우")}>팁과 노하우</InfoMenu>
+                    <InfoMenu onClick={() => handleFilterClick("패치노트")}>패치노트</InfoMenu>
                 </InfoBox>
                 <InfoBox>
                     <InfoTitle>커뮤니티</InfoTitle>
-                    <InfoMenu>자유</InfoMenu>
-                    <InfoMenu>유머</InfoMenu>
-                    <InfoMenu>질문</InfoMenu>
-                    <InfoMenu>자랑글</InfoMenu>
-                </InfoBox>
-                <InfoBox>
-                    <InfoTitle>E-Sports</InfoTitle>
-                    <InfoMenu>LCK</InfoMenu>
-                    <InfoMenu>LPL</InfoMenu>
-                    <InfoMenu>LEC</InfoMenu>
+                    <InfoMenu onClick={() => handleFilterClick("자유")}>자유</InfoMenu>
+                    <InfoMenu onClick={() => handleFilterClick("유머")}>유머</InfoMenu>
+                    <InfoMenu onClick={() => handleFilterClick("질문")}>질문</InfoMenu>
+                    <InfoMenu onClick={() => handleFilterClick("자랑글")}>자랑글</InfoMenu>
                 </InfoBox>
             </Wrapper>
 

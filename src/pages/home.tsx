@@ -7,6 +7,8 @@ import useCommunityList from "../hooks/communityList/useCommunityList";
 import NoLogin from "./noLogin";
 import useCommunityPopularList from "../hooks/communityList/useCommuityPopularList";
 import useCommunitySearchList from "../hooks/communityList/useCommunitySearchList";
+import SideMenu from "../components/sideMenu";
+import useCategoryCommunityList from "../hooks/communityList/useCommunityCategoryList";
 
 const CommunityWrapper = styled.div`
     display: flex;
@@ -29,6 +31,10 @@ const Home = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const { data: communitySearchList, isLoading: isCommunitySearchListLoading } = useCommunitySearchList(searchQuery);
     const [filteredList, setFilteredList] = useState(communityList);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+    // 선택된 카테고리에 따라 데이터를 가져오기
+    const { data: communityCategoryList, isLoading: isCategoryLoading } = useCategoryCommunityList(selectedCategory || "");
 
     useEffect(() => {
         if (isLogin) {
@@ -51,32 +57,41 @@ const Home = () => {
     useEffect(() => {
         if (searchQuery && communitySearchList) {
             setFilteredList(communitySearchList);
-        } else if (communityList) {
+        } else if (!searchQuery && selectedCategory && communityCategoryList) {
+            setFilteredList(communityCategoryList);
+        } else if (!searchQuery && !selectedCategory && communityList) {
             setFilteredList(communityList);
         }
-    }, [communityList, communitySearchList, searchQuery]);
+    }, [communitySearchList, searchQuery, selectedCategory, communityCategoryList, communityList]);
 
     const handleFilter = (filterType: string) => {
         if (filterType === "recent") {
             setFilteredList(communityList);
+            setSelectedCategory(null); // 카테고리 초기화
         } else if (filterType === "popularity") {
             setFilteredList(communityPopularList);
+            setSelectedCategory(null); // 카테고리 초기화
+        } else {
+            setSelectedCategory(filterType); // 선택된 카테고리 업데이트
         }
     };
 
+    // 검색 핸들러
     const handleSearch = (query: string) => {
         setSearchQuery(query);
+        setSelectedCategory(null); // 검색 시 카테고리 초기화
     };
 
     return (
         <>
+            <SideMenu onFilter={handleFilter} />
             <CommunityWrapper>
                 <CommunitiesHeader onFilter={handleFilter} onSearch={handleSearch} />
-                {isCommunityListLoading || isCommunityPopularListLoading || isCommunitySearchListLoading &&
+                {(isCommunityListLoading || isCommunityPopularListLoading || isCommunitySearchListLoading || isCategoryLoading) && (
                     <LoadingWrapper>
                         로딩중입니다....
                     </LoadingWrapper>
-                }
+                )}
                 {isLogin ? (
                     <Communities communityList={filteredList} />
                 ) : (

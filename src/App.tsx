@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Header from "./components/header";
 import styled from "styled-components";
-import SideMenu from "./components/sideMenu";
+// import SideMenu from "./components/sideMenu";
 import Chat from "./components/chat";
 
 const Wrapper = styled.div`
@@ -17,7 +17,6 @@ const App = () => {
     <>
       <Header />
       <Wrapper>
-        <SideMenu />
         <Outlet />
         <Chat />
       </Wrapper>

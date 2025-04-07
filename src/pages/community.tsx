@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Modal from "../components/modal";
@@ -11,6 +11,10 @@ import useCommunity from "../hooks/community/useCommunity";
 import useCommentList from "../hooks/comment/useCommentList";
 import { useQueryClient } from "@tanstack/react-query";
 import useCommentRecentList from "../hooks/comment/useCommentRecentList";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
+import Toast from "../components/toast";
+import SideMenu from "../components/sideMenu";
 
 const Wrapper = styled.div`
     display: flex;
@@ -19,6 +23,7 @@ const Wrapper = styled.div`
     width: 63rem;
     height: 50rem;
     overflow-y: scroll;
+    position: relative;
 `;
 
 const MainContainer = styled.div`
@@ -180,6 +185,10 @@ const CommentFilterBox = styled.div`
 const CommentFilterButton = styled.button`
     font-size: 1.2rem;
 `;
+interface Notification {
+    message: string;
+    timestamp: string;
+};
 
 const Community = () => {
     const queryClient = useQueryClient();
@@ -194,10 +203,31 @@ const Community = () => {
     const [showEditForm, setShowEditForm] = useState<{ [key: number]: boolean }>({});  // 댓글 수정 폼 상태 관리
     const [editContent, setEditContent] = useState<string>("");
     const [filterType, setFilterType] = useState<string>("popular");
-
     const { data: communityPost } = useCommunity(communityId ?? ""); // communityId가 undefined일 때 빈 문자열로 처리
     const { data: commentList } = useCommentList(communityId ?? "");
     const { data: commentRecentList } = useCommentRecentList(communityId ?? "");
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+
+    useEffect(() => {
+        // WebSocket 엔드포인트 설정 (Spring Boot WebSocket 경로)
+        const socket = new SockJS("http://localhost:8080/ws");
+        const stompClient = new Client({
+            webSocketFactory: () => socket,
+            reconnectDelay: 5000, // 자동 재연결
+        });
+        // 연결 성공 시 구독
+        stompClient.onConnect = () => {
+            console.log("WebSocket Connected!");
+            stompClient.subscribe(`/topic/notifications/${userInfo.nickname}`, (message) => {
+                const notification: Notification = JSON.parse(message.body);
+                setNotifications((prev) => [notification, ...prev]);
+            });
+        };
+        stompClient.activate();
+        return () => {
+            stompClient.deactivate();
+        };
+    }, [userInfo]);
 
     // 게시글 삭제
     const deleteCommunity = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -384,6 +414,7 @@ const Community = () => {
 
     return (
         <>
+            <SideMenu />
             <Wrapper>
                 {communityPost && (
                     <MainContainer key={communityPost.id}>
@@ -511,6 +542,14 @@ const Community = () => {
                 {/* 커뮤니티 목록 영역 */}
                 {/* <Communities communityList={communityList} addLike={addLike} /> */}
             </Wrapper >
+
+
+            {/* 토스트 영역 */}
+            {notifications.map((noti) => (
+                <>
+                    <Toast message={noti.message} />
+                </>
+            ))}
 
             {/* 모달 관리 */}
             {isOpen("dupLikeComment") &&

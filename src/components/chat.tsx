@@ -96,19 +96,12 @@ const Chat = () => {
         stompClient = new Client({
           webSocketFactory: () => socket,
           reconnectDelay: 3000,
-          debug: (msg) => console.log("STOMP:", msg),
           onConnect: () => {
-            console.log("✅ WebSocket 연결됨!");
-
             // 서버에서 오는 메시지를 구독
             stompClient?.subscribe("/topic/chat", (message) => {
               const receivedMessage = JSON.parse(message.body);
               setMessages((prevMessages) => [...prevMessages, receivedMessage]);
             });
-            // stompClient?.subscribe(`/topic/notifications/${userInfo.nickname}`, (message) => {
-            //   const receivedMessage = JSON.parse(message.body);
-            //   setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-            // })
           },
           onDisconnect: () => {
             console.log("❌ WebSocket 연결 종료됨");

@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../components/modal";
+import SideMenu from "../components/sideMenu";
 
 const Wrapper = styled.div`
   display: flex;
@@ -110,6 +111,7 @@ const CommunityWrite = () => {
 
   return (
     <>
+      <SideMenu />
       <Wrapper>
         <MainContainer>
           <Title>글 작성</Title>

@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import IContent from "../types/content";
 import Modal from "../components/modal";
+import SideMenu from "../components/sideMenu";
 
 const Wrapper = styled.div`
   display: flex;
@@ -126,6 +127,7 @@ const CommunityEdit = () => {
 
     return (
         <>
+            <SideMenu />
             <Wrapper>
                 <MainContainer>
                     <Title>글 수정</Title>
