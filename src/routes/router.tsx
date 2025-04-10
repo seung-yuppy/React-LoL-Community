@@ -8,6 +8,8 @@ import SelectNickName from "../pages/selectUserInfo";
 import CommunityWrite from "../pages/communityWrite";
 import Community from "../pages/community";
 import CommunityEdit from "../pages/communityEdit";
+import EditNickname from "../pages/editNickname";
+import EditTeamimage from "../pages/editTeamimage";
 
 const Router = createBrowserRouter([
     {
@@ -22,6 +24,16 @@ const Router = createBrowserRouter([
             {
                 path: "mypage",
                 element: <MyPage />,
+                errorElement: <ErrorComponent />
+            },
+            {
+                path: "mypage/editnickname",
+                element: <EditNickname />,
+                errorElement: <ErrorComponent />
+            },
+            {
+                path: "mypage/editteamimage",
+                element: <EditTeamimage />,
                 errorElement: <ErrorComponent />
             },
             {
@@ -43,7 +55,7 @@ const Router = createBrowserRouter([
                 path: "community/:communityId/edit",
                 element: <CommunityEdit />,
                 errorElement: <ErrorComponent />
-            }
+            },
         ],
         errorElement: <ErrorPage />,
     },

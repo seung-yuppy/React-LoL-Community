@@ -58,9 +58,17 @@ const InfoBox = styled.div`
 const ChatItem = styled.p`
   display: flex;
   align-items: center;
-  font-size: 1rem;
-  padding: 0.3rem;
+  font-size: 1.2rem;
+  padding: 1rem 0.3rem;
   line-height: 1rem;
+  border: 1px solid black;
+  border-radius: 1rem;
+  gap: 1rem;
+  align-self: flex-end;
+  background: #2979ff;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 16px 16px 0 16px;
 `;
 
 const ChatBox = styled.div`
@@ -68,6 +76,7 @@ const ChatBox = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   overflow-y: scroll;
+  gap: 1rem;
 `;
 
 const TableTitle = styled.h2`
@@ -75,15 +84,48 @@ const TableTitle = styled.h2`
   font-weight: bold;
 `;
 
-const TeamLogo = styled.img`
-  width: 3rem;
-  height: 3rem;
+const ChatTime = styled.span`
+  font-size: 1rem;
+  color: gray;
+`;
+
+const ChatOtherItem = styled.p`
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  padding: 1rem 0.3rem;
+  line-height: 1rem;
+  border: 1px solid black;
+  border-radius: 1rem;
+  gap: 1rem;
+  align-self: flex-start;
+  background: #f0f0f0;
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 16px 16px 16px 0;
+`;
+
+const ChatItemBox = styled.div`
+  display: flex;
+  align-items: center;
+  align-self: flex-end;
+  gap: 0.3rem;
+`;
+
+const ChatOtherItemBox = styled.div`
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.3rem;
 `;
 
 const Chat = () => {
   const { userInfo, isLogin } = useAuth();
   const [client, setClient] = useState<Client | null>(null);
-  const [messages, setMessages] = useState<{ nickname: string, content: string }[]>([]);
+  const [messages, setMessages] = useState<{
+    date: string;
+    imageUrl: string | undefined; nickname: string, content: string
+  }[]>([]);
   const [message, setMessage] = useState<string>("");
   const [showAlertModal, setShowAlertModal] = useState<boolean>(false); // 로그인 경고창 모달 상태 관리
 
@@ -100,7 +142,15 @@ const Chat = () => {
             // 서버에서 오는 메시지를 구독
             stompClient?.subscribe("/topic/chat", (message) => {
               const receivedMessage = JSON.parse(message.body);
-              setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+              const currentDate = new Date().toLocaleString("ko-KR", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              });
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                { ...receivedMessage, date: currentDate },
+              ]);
             });
           },
           onDisconnect: () => {
@@ -148,9 +198,23 @@ const Chat = () => {
         <ChatBox>
           <InfoBox>실시간 채팅</InfoBox>
           {messages.map((msg, index) => (
-            <ChatItem key={index}>
-              <TeamLogo />{msg.nickname} : {msg.content}
-            </ChatItem>
+            userInfo.nickname === msg.nickname ? (
+              <ChatItemBox>
+                <ChatItem key={index}>
+                  {msg.nickname} : {msg.content}
+                </ChatItem>
+                <ChatTime>{msg.date}</ChatTime>
+              </ChatItemBox>
+
+            ) : (
+              <ChatOtherItemBox>
+                <ChatOtherItem key={index}>
+                  {msg.nickname} : {msg.content}
+                </ChatOtherItem>
+                <ChatTime>{msg.date}</ChatTime>
+              </ChatOtherItemBox>
+
+            )
           ))}
         </ChatBox>
         <FormWrapper onSubmit={sendMessage}>

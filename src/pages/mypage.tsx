@@ -8,6 +8,7 @@ import IUserInfo from "../types/userInfo";
 import IContent from "../types/content";
 import IComment from "../types/comment";
 import ico_arrow_turn_down from "../images/ico_arrow_turn_down.svg";
+import SideMenu from "../components/sideMenu";
 
 const Wrapper = styled.div`
     display: flex;
@@ -232,9 +233,9 @@ const MyPage = () => {
 
   return (
     <>
+      <SideMenu />
       <Wrapper>
         <Title>{user?.name}님, 안녕하세요!</Title>
-
         {/* 유저 정보 영역 */}
         <Container>
           <InfoBox>
@@ -292,8 +293,8 @@ const MyPage = () => {
           {!userInfo && <Link to={'/mypage/userinfo'}><SelectButton>닉네임 정하기</SelectButton></Link>}
           {userInfo &&
             <>
-              <Link to={'/mypage/edit/nickname'}><SelectButton>닉네임 수정하기</SelectButton></Link>
-              <Link to={'/mypage/edit/image'}><SelectButton>이미지 수정하기</SelectButton></Link>
+              <Link to={'/mypage/editnickname'}><SelectButton>닉네임 수정하기</SelectButton></Link>
+              <Link to={'/mypage/editteamimage'}><SelectButton>이미지 수정하기</SelectButton></Link>
             </>
           }
           {userInfo && <LogoutButton onClick={handleDelModal}>탈퇴하기</LogoutButton>}

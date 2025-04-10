@@ -9,6 +9,9 @@ import useCommunityPopularList from "../hooks/communityList/useCommuityPopularLi
 import useCommunitySearchList from "../hooks/communityList/useCommunitySearchList";
 import SideMenu from "../components/sideMenu";
 import useCategoryCommunityList from "../hooks/communityList/useCommunityCategoryList";
+import useCommunitySearchContentList from "../hooks/communityList/useCommunitySearchContentList";
+import useCommunitySearchNicknameList from "../hooks/communityList/useCommunitySearchNicknameList";
+import useCommunitySearchTitleContentList from "../hooks/communityList/useCommunitySearchTitleContentList";
 
 const CommunityWrapper = styled.div`
     display: flex;
@@ -30,8 +33,12 @@ const Home = () => {
     const { data: communityPopularList, isLoading: isCommunityPopularListLoading } = useCommunityPopularList();
     const [searchQuery, setSearchQuery] = useState("");
     const { data: communitySearchList, isLoading: isCommunitySearchListLoading } = useCommunitySearchList(searchQuery);
+    const { data: communitySearchContentList } = useCommunitySearchContentList(searchQuery);
+    const { data: communitySearchNicknameList } = useCommunitySearchNicknameList(searchQuery);
+    const { data: communitySearchTitleContentList } = useCommunitySearchTitleContentList(searchQuery);
     const [filteredList, setFilteredList] = useState(communityList);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [searchCategory, setSearchCategory] = useState("제목");
 
     // 선택된 카테고리에 따라 데이터를 가져오기
     const { data: communityCategoryList, isLoading: isCategoryLoading } = useCategoryCommunityList(selectedCategory || "");
@@ -54,15 +61,38 @@ const Home = () => {
         }
     }, [isLogin, setInfo]);
 
+    // 검색 및 필터링 로직
     useEffect(() => {
-        if (searchQuery && communitySearchList) {
-            setFilteredList(communitySearchList);
+        if (searchQuery) {
+            if (searchCategory === "제목") {
+                setFilteredList(communitySearchList);
+                setSelectedCategory(null);
+            } else if (searchCategory === "내용") {
+                setFilteredList(communitySearchContentList);
+                setSelectedCategory(null);
+            } else if (searchCategory === "작성자") {
+                setFilteredList(communitySearchNicknameList);
+                setSelectedCategory(null);
+            } else if (searchCategory === "제목+내용") {
+                setFilteredList(communitySearchTitleContentList);
+                setSelectedCategory(null);
+            }
         } else if (!searchQuery && selectedCategory && communityCategoryList) {
             setFilteredList(communityCategoryList);
         } else if (!searchQuery && !selectedCategory && communityList) {
             setFilteredList(communityList);
         }
-    }, [communitySearchList, searchQuery, selectedCategory, communityCategoryList, communityList]);
+    }, [
+        searchQuery,
+        searchCategory,
+        selectedCategory,
+        communitySearchList,
+        communitySearchTitleContentList,
+        communitySearchContentList,
+        communitySearchNicknameList,
+        communityCategoryList,
+        communityList,
+    ]);
 
     const handleFilter = (filterType: string) => {
         if (filterType === "recent") {
@@ -77,11 +107,11 @@ const Home = () => {
     };
 
     // 검색 핸들러
-    const handleSearch = (query: string) => {
+    const handleSearch = (query: string, category: string) => {
         setSearchQuery(query);
+        setSearchCategory(category);
         setSelectedCategory(null); // 검색 시 카테고리 초기화
     };
-
     return (
         <>
             <SideMenu onFilter={handleFilter} />

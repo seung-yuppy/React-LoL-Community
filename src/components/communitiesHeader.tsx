@@ -57,7 +57,7 @@ const CommunitiesHeader = ({
     onSearch,
 }: {
     onFilter: (filterType: string) => void;
-    onSearch: (searchQuery: string) => void;
+    onSearch: (searchQuery: string, category: string) => void;
 }) => {
     const { isLogin, userInfo } = useAuth();
     const { isOpen, openModal, closeModal } = useModal();
@@ -70,12 +70,12 @@ const CommunitiesHeader = ({
         onFilter(filterType);
     };
 
-    const handleSearchSubmit = (searchQuery: string) => {
+    const handleSearchSubmit = (searchQuery: string, category: string) => {
         if (!isLogin) {
             openModal("loginAlert");
             return;
         }
-        onSearch(searchQuery);
+        onSearch(searchQuery, category);
     };
 
     return (

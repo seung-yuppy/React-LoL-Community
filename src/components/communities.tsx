@@ -7,6 +7,7 @@ import useModal from "../hooks/useModal";
 import Modal from "./modal";
 import IContent from "../types/content";
 import fetchAddLikeCommunityList from "../services/communityList/communityListLikeService";
+import formatDate from "../util/dateUtil";
 
 const Wrapper = styled.div`
     display: flex;
@@ -142,7 +143,7 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
                                             <TableTitle>{community.title} [{community.commentsCount}]</TableTitle>
                                         </TableBodytd>
                                         <TableBodytd>
-                                            <TableDate>조회수:{community.viewsCount} | {community.nickname}</TableDate>
+                                            <TableDate>조회수:{community.viewsCount} | {formatDate(community.updatedAt)}  | {community.nickname}</TableDate>
                                         </TableBodytd>
                                     </BoxInfo>
                                 </Link>

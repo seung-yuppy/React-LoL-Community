@@ -46,16 +46,27 @@ const WriteButton = styled.button`
     cursor: pointer;
 `;
 
+const CategorySelect = styled.select`
+  width: 35rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #333;
+  background-color: #fff;
+  color: #333;
+`;
+
 const CommunityWrite = () => {
   const [title, setTitle] = useState<string>(""); // 글 제목
   const [content, setContent] = useState<string>(""); // 글 내용
+  const [category, setCategory] = useState<string>("");
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false); // 글 등록 알림 모달 상태 관리
   const navigate = useNavigate();
 
   const sendCommunity = async (
     e: React.MouseEvent<HTMLButtonElement>,
     title: string,
-    content: string
+    content: string,
+    category: string
   ) => {
     e.preventDefault();
     await fetch(`http://localhost:8080/community`, {
@@ -63,7 +74,7 @@ const CommunityWrite = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, content }),
+      body: JSON.stringify({ title, content, category }),
       credentials: "include",
     });
     setShowConfirmModal(true);
@@ -84,8 +95,6 @@ const CommunityWrite = () => {
               .then((response) => response.json())
               .then((data) => {
                 if (data.uploaded) {
-                  console.log(data);
-                  console.log("data url은 " + data.url);
                   resolve({ default: data.url });
                 } else {
                   reject("Image upload failed.");
@@ -121,6 +130,14 @@ const CommunityWrite = () => {
             onChange={(e) => setTitle(e.currentTarget.value)}
             type="text"
           />
+          <CategorySelect value={category} onChange={(e) => setCategory(e.target.value)}>
+            <option value={"팁과 노하우"}>팁과 노하우</option>
+            <option value={"패치노트"}>패치노트</option>
+            <option value={"자유"}>자유</option>
+            <option value={"유머"}>유머</option>
+            <option value={"질문"}>질문</option>
+            <option value={"자랑글"}>자랑글</option>
+          </CategorySelect>
           <CKEditor
             editor={ClassicEditor}
             config={{
@@ -134,7 +151,7 @@ const CommunityWrite = () => {
               setContent(data);
             }}
           />
-          <WriteButton onClick={(e) => sendCommunity(e, title, content)}>
+          <WriteButton onClick={(e) => sendCommunity(e, title, content, category)}>
             글 게시하기
           </WriteButton>
         </MainContainer>

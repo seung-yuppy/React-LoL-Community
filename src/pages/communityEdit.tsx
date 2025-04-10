@@ -47,10 +47,20 @@ const WriteButton = styled.button`
     cursor: pointer;
 `;
 
+const CategorySelect = styled.select`
+  width: 35rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #333;
+  background-color: #fff;
+  color: #333;
+`;
+
 const CommunityEdit = () => {
     const { communityId } = useParams();
     const [title, setTitle] = useState<string>(""); // 글 제목
     const [content, setContent] = useState<string>(""); // 글 내용
+    const [category, setCategory] = useState<string>("");
     const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false); // 글 수정 알림 모달 상태 관리
     const navigate = useNavigate();
 
@@ -72,7 +82,8 @@ const CommunityEdit = () => {
     const editCommunity = async (
         e: React.MouseEvent<HTMLButtonElement>,
         title: string,
-        content: string
+        content: string,
+        category: string
     ) => {
         e.preventDefault();
         await fetch(`http://localhost:8080/community/${communityId}`, {
@@ -80,7 +91,7 @@ const CommunityEdit = () => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ title, content }),
+            body: JSON.stringify({ title, content, category }),
             credentials: "include",
         });
         setShowConfirmModal(true);
@@ -137,6 +148,14 @@ const CommunityEdit = () => {
                         onChange={(e) => setTitle(e.target.value)}
                         type="text"
                     />
+                    <CategorySelect value={category} onChange={(e) => setCategory(e.target.value)}>
+                        <option value={"팁과 노하우"}>팁과 노하우</option>
+                        <option value={"패치노트"}>패치노트</option>
+                        <option value={"자유"}>자유</option>
+                        <option value={"유머"}>유머</option>
+                        <option value={"질문"}>질문</option>
+                        <option value={"자랑글"}>자랑글</option>
+                    </CategorySelect>
                     <CKEditor
                         editor={ClassicEditor}
                         config={{
@@ -149,7 +168,7 @@ const CommunityEdit = () => {
                             setContent(data);
                         }}
                     />
-                    <WriteButton onClick={(e) => editCommunity(e, title, content)}>
+                    <WriteButton onClick={(e) => editCommunity(e, title, content, category)}>
                         글 수정하기
                     </WriteButton>
                 </MainContainer>
@@ -157,7 +176,7 @@ const CommunityEdit = () => {
 
             {/* 모달 관리 */}
             {showConfirmModal &&
-                <Modal onClick={() => { setShowConfirmModal(false); navigate(`/community/${communityId}`) }}>
+                <Modal onClose={() => { setShowConfirmModal(false); navigate(`/community/${communityId}`) }}>
                     <Title> 글 등록을 완료하였습니다.</Title >
                 </Modal >
             }

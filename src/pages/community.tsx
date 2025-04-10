@@ -15,6 +15,7 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import Toast from "../components/toast";
 import SideMenu from "../components/sideMenu";
+import formatDate from "../util/dateUtil";
 
 const Wrapper = styled.div`
     display: flex;
@@ -421,7 +422,7 @@ const Community = () => {
                         <Title>{communityPost.title}</Title>
                         <InfoHeader>
                             <ContentHeader>
-                                <HeaderContent1>{communityPost.nickname} | {communityPost.updatedAt}</HeaderContent1>
+                                <HeaderContent1>{communityPost.nickname} | {formatDate(communityPost.updatedAt)} | {communityPost.category}</HeaderContent1>
                                 <HeaderContent2>조회수 {communityPost.viewsCount} | 댓글 {communityPost.commentsCount} | 추천 {communityPost.likesCount}</HeaderContent2>
                             </ContentHeader>
                             {communityPost.nickname === userInfo.nickname &&
@@ -457,7 +458,7 @@ const Community = () => {
                             <CommentBox key={index}>
                                 <CommentHeader1>
                                     <TeamLogo src={comment.imageUrl} alt="이미지 없음" />
-                                    <HeaderContent1>{comment.nickname} | {comment.createdAt}</HeaderContent1>
+                                    <HeaderContent1>{comment.nickname} | {formatDate(comment.createdAt)}</HeaderContent1>
                                 </CommentHeader1>
                                 {!showEditForm[comment.id] &&
                                     <>
@@ -513,7 +514,7 @@ const Community = () => {
                                     <CommentBox>
                                         <CommentHeader1>
                                             <TeamLogo src={reply.imageUrl} alt="이미지 없음" />
-                                            <HeaderContent2>{reply.nickname} | {reply.createdAt}</HeaderContent2>
+                                            <HeaderContent2>{reply.nickname} | {formatDate(reply.createdAt)}</HeaderContent2>
                                         </CommentHeader1>
                                         <HeaderContent1>{reply.content}</HeaderContent1>
                                         {/* 대댓글 좋아요 & 싫어요 영역 */}
