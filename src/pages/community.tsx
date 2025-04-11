@@ -16,6 +16,7 @@ import { Client } from "@stomp/stompjs";
 import Toast from "../components/toast";
 import SideMenu from "../components/sideMenu";
 import formatDate from "../util/dateUtil";
+import useRecent from "../stores/useRecent";
 
 const Wrapper = styled.div`
     display: flex;
@@ -209,6 +210,8 @@ const Community = () => {
     const { data: commentRecentList } = useCommentRecentList(communityId ?? "");
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
+    const { setRecentArr } = useRecent();
+
     useEffect(() => {
         // WebSocket 엔드포인트 설정 (Spring Boot WebSocket 경로)
         const socket = new SockJS("http://localhost:8080/ws");
@@ -229,6 +232,12 @@ const Community = () => {
             stompClient.deactivate();
         };
     }, [userInfo]);
+
+    useEffect(() => {
+        if (communityId && communityPost) {
+            setRecentArr({ id: communityId, title: communityPost.title })
+        }
+    }, [communityId, communityPost, setRecentArr]);
 
     // 게시글 삭제
     const deleteCommunity = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -264,7 +273,6 @@ const Community = () => {
                     body: JSON.stringify({ content }),
                     credentials: "include",
                 });
-                // setShowCommentModal(true);
                 openModal("comment");
                 setContent("");
                 queryClient.invalidateQueries({ queryKey: ["comment"] });
@@ -422,7 +430,7 @@ const Community = () => {
                         <Title>{communityPost.title}</Title>
                         <InfoHeader>
                             <ContentHeader>
-                                <HeaderContent1>{communityPost.nickname} | {formatDate(communityPost.updatedAt)} | {communityPost.category}</HeaderContent1>
+                                <HeaderContent1>{communityPost.category} | {formatDate(communityPost.updatedAt)} | {communityPost.nickname}</HeaderContent1>
                                 <HeaderContent2>조회수 {communityPost.viewsCount} | 댓글 {communityPost.commentsCount} | 추천 {communityPost.likesCount}</HeaderContent2>
                             </ContentHeader>
                             {communityPost.nickname === userInfo.nickname &&

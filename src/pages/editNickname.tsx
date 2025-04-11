@@ -33,9 +33,9 @@ const UsernameInput = styled.input`
 `;
 
 const CheckInput = styled.div`
-display:flex;
-align-items: center;
-gap: 2rem;
+  display:flex;
+  align-items: center;
+  gap: 2rem;
 `;
 
 const Btn = styled.button`
@@ -73,12 +73,12 @@ const EditNickname = () => {
   const checkDuplicate = async () => {
     const response = await fetch(`http://localhost:8080/check/${nickname}`, { credentials: "include", });
     const data = await response.json();
-    console.log(data);
     setMsg(data.message);
     return data.available;
   };
 
-  const handleEdit = async () => {
+  const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     await fetch(`http://localhost:8080/info`, {
       credentials: "include",
       method: "PATCH",
