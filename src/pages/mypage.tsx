@@ -11,133 +11,130 @@ import ico_arrow_turn_down from "../images/ico_arrow_turn_down.svg";
 import SideMenu from "../components/sideMenu";
 
 const Wrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 50rem;
-    width: 60rem;
-    border: 1px solid #333;
-    border-radius: 1rem;
-    overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60rem;
+  box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
 `;
 
 const Title = styled.h2`
-    font-size: 2.3rem;
-    margin-top: 3rem;
+  font-size: 2.3rem;
+  margin-top: 3rem;
 `;
 
 const Container = styled.div`
-    display: flex;
-    gap: 3rem;
+  display: flex;
+  gap: 3rem;
 `;
 
 const EmailBox = styled.fieldset`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    border: 1px solid gray;
-    padding: 1rem 3rem;
-    border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border: 1px solid gray;
+  padding: 1rem 3rem;
+  border-radius: 1rem;
 `;
 
 const EmailLegend = styled.legend``;
 
 const InfoBox = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    font-size: 1.5rem;
-    gap: 1.5rem;
-    padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-size: 1.5rem;
+  gap: 1.5rem;
+  padding: 2rem;
 `;
 
 const Info = styled.h1`
-    font-size: 1.5rem;
+  font-size: 1.5rem;
 `;
 
 const ButtonContainer = styled.div`
-    display: flex;
-    gap: 2rem;
-    padding: 1rem;
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
 `;
 
 const SelectButton = styled.button`
-    padding: 1rem;
-    width: 15rem;
-    border-radius: 1rem;
-    color: #fff;
-    font-size: 1.2rem;
-    background-color: #08ccac;
-    border: 1px solid #08ccac;
-    cursor: pointer;
+  padding: 1rem;
+  width: 15rem;
+  border-radius: 1rem;
+  color: #fff;
+  font-size: 1.2rem;
+  background-color: #08ccac;
+  border: 1px solid #08ccac;
+  cursor: pointer;
 `;
 
 const LogoutButton = styled(SelectButton)`
-    background-color: crimson;
-    border: 1px solid crimson;
+  background-color: crimson;
+  border: 1px solid crimson;
 `;
 
 const ImgItem = styled.img`
-    width: 20rem;
-    height: 10rem;
-    object-fit: contain;
+  width: 20rem;
+  height: 10rem;
+  object-fit: contain;
 `;
 
 const ModalDelButton = styled.button`
-    color: #fff;
-    background-color: crimson;
-    border: crimson;
-    padding: 0.7rem 2rem;
-    font-size: 1.2rem;
-    border-radius:0.5rem;
-    cursor: pointer;
+  color: #fff;
+  background-color: crimson;
+  border: crimson;
+  padding: 0.7rem 2rem;
+  font-size: 1.2rem;
+  border-radius:0.5rem;
+  cursor: pointer;
 `;
 
 const MyBox = styled.fieldset`
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    border: 1px solid gray;
-    padding: 1rem 3rem;
-    height: 20rem;
-    border-radius: 1rem;
-    overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid gray;
+  padding: 1rem 3rem;
+  height: 20rem;
+  border-radius: 1rem;
+  overflow-y: scroll;
 `
 
 const MyItem = styled.ul`
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;
 
 const MyItemList = styled.li`
-    font-size: 1.3rem;
-    list-style-type: circle;
-    line-height: 1.5rem;
+  font-size: 1.3rem;
+  list-style-type: circle;
+  line-height: 1.5rem;
 `;
 
 const ItemBox = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;
 
 const ItemTitle = styled.h2`
-    font-size: 1.3rem;
+  font-size: 1.3rem;
 `;
 
 const ItemContent = styled.p`
-    display: flex;
-    align-items: center;
-    font-size: 1.1rem;
-    gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  gap: 0.5rem;
 `;
 
 const CommentImage = styled.img`
-    cursor:pointer;
-    width: 2rem;
-    object-fit: cover;
+  cursor:pointer;
+  width: 2rem;
+  object-fit: cover;
 `;
 
 const MyPage = () => {
@@ -148,6 +145,7 @@ const MyPage = () => {
   const [showRemoveModal, setShowRemoveModal] = useState<boolean>(false); // 탈퇴 알림 모달 상태 관리
   const [myCommunity, setMyCommunity] = useState<IContent[]>([]); // 내가 쓴 글 목록
   const [myComment, setMyComment] = useState<IComment[]>([]); // 내가 쓴 댓글 목록
+  const [likeCommunity, setLikeCommunity] = useState<IContent[]>([])  // 내가 추천한 글 목록
 
   useEffect(() => {
     // 유저 기본 정보 불러오기
@@ -205,11 +203,25 @@ const MyPage = () => {
       } catch (error) {
         console.error("내가 쓴 댓글 불러오기 실패", error);
       }
+    };
+    // 내가 추천한 글 목록
+    const fetchMyLikeContent = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/community/likes`, {
+          method: "GET",
+          credentials: "include",
+        })
+        const data = await response.json();
+        setLikeCommunity(data);
+      } catch (error) {
+        console.error("내가 추천한 글 불러오기 실패", error);
+      }
     }
     fetchUser();
     fetchUserInfo();
     fetchMyCommunity();
     fetchMyComment();
+    fetchMyLikeContent();
   }, []);
 
   // 탈퇴 버튼 누르면 모달창 생성
@@ -249,11 +261,16 @@ const MyPage = () => {
                   <EmailLegend>닉네임</EmailLegend>
                   <Info>{userInfo?.nickname}</Info>
                 </EmailBox>
-                <EmailBox>
-                  <EmailLegend>포인트 & 경험치</EmailLegend>
-                  <Info>{userInfo?.point} Point</Info>
-                  <Info>LV. {userInfo?.level} [{userInfo?.exp} EXP]</Info>
-                </EmailBox>
+                <MyBox>
+                  <EmailLegend>내가 추천한 글</EmailLegend>
+                  <MyItem>
+                    {likeCommunity.map((community) => (
+                      <MyItemList key={community.id}>
+                        <Link to={`/community/${community.id}`}>{community.title}</Link>
+                      </MyItemList>
+                    ))}
+                  </MyItem>
+                </MyBox>
                 <EmailBox>
                   <EmailLegend>My Team</EmailLegend>
                   <ImgItem src={userInfo?.imageUrl} />

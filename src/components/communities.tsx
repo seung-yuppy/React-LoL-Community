@@ -12,18 +12,14 @@ import formatDate from "../util/dateUtil";
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    height: 50rem;
+    padding-block: 2rem;
 `;
 
 const MainContainer = styled.div`
     display: flex;
-    align-items: center;
     flex-direction: column;
-    height: 42rem;
-    border: 1px solid #333;
     padding: 1rem 2rem;
-    border-radius: 1rem;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
 `;
 
 const TableBox = styled.ul`
@@ -31,7 +27,6 @@ const TableBox = styled.ul`
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    overflow-y: scroll;
 `;
 
 const TableBody = styled.li`
@@ -43,6 +38,10 @@ const TableBody = styled.li`
     gap: 10rem;
     transition: color 0.3s;
     border-bottom: 1px solid gray;
+
+    &:hover {
+        background-color: #ebebeb;
+    }
 `;
 
 const TableBodytd = styled.div`
@@ -96,9 +95,9 @@ const Thumbnail = styled.div`
 
 const Communities = ({ communityList }: { communityList: IContent[] | undefined }) => {
     const queryClient = useQueryClient();
-    const { isOpen, openModal, closeModal } = useModal();  // 모달 관리
+    const { isOpen, openModal, closeModal } = useModal();
 
-    // 좋아요 버튼 누르면 react-query의 mutation으로 업데이트하기
+    // 좋아요 mutation
     const addLike = useMutation({
         mutationFn: fetchAddLikeCommunityList,
         onSuccess: (data) => {
@@ -116,7 +115,6 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
         },
     });
 
-    // useMutation을 사용하기 위한 함수
     const handleLikeClick = (id: number) => {
         addLike.mutate(id);
     };
@@ -126,7 +124,7 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
             <Wrapper>
                 <MainContainer>
                     <TableBox>
-                        {communityList?.slice(0, 20).map((community) => (
+                        {communityList?.map((community) => (
                             <TableBody key={community.id}>
                                 <ButtonContainer>
                                     <LikeButton onClick={() => handleLikeClick(community.id)}>
@@ -158,7 +156,7 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
                         ))}
                     </TableBox>
                 </MainContainer>
-            </Wrapper >
+            </Wrapper>
 
             {/* 모달 관리 */}
             {isOpen("like") && (
@@ -173,6 +171,6 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
             )}
         </>
     );
-}
+};
 
 export default Communities;

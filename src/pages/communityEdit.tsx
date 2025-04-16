@@ -3,38 +3,36 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import IContent from "../types/content";
 import Modal from "../components/modal";
 import SideMenu from "../components/sideMenu";
 
 const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 2rem;
-  height: 50rem;
-  border: 1px solid #333;
-  border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    height: 50rem;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
 `;
 
 const MainContainer = styled.div`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 2rem;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 2rem;
 `;
 
 const TitleInput = styled.input`
-  height: 2.5rem;
-  width: 35rem;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #333;
-  background-color: #fff;
-  color: #333;
+    height: 2.5rem;
+    width: 35rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #333;
+    background-color: #fff;
+    color: #333;
 `;
 
 const Title = styled.span`
-  font-size: 2.3rem;
+    font-size: 2.3rem;
 `;
 
 const WriteButton = styled.button`
@@ -48,12 +46,12 @@ const WriteButton = styled.button`
 `;
 
 const CategorySelect = styled.select`
-  width: 35rem;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #333;
-  background-color: #fff;
-  color: #333;
+    width: 35rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #333;
+    background-color: #fff;
+    color: #333;
 `;
 
 const CommunityEdit = () => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import styled from "styled-components";
@@ -9,8 +9,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid #333;
-  border-radius: 1rem;
+  box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
   height: 50rem;
   width: 25rem;
   padding: 1rem;
@@ -128,6 +127,7 @@ const Chat = () => {
   }[]>([]);
   const [message, setMessage] = useState<string>("");
   const [showAlertModal, setShowAlertModal] = useState<boolean>(false); // 로그인 경고창 모달 상태 관리
+  const messageEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let stompClient: Client | null = null;
@@ -175,6 +175,19 @@ const Chat = () => {
     };
   }, [isLogin]);
 
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollTo({
+        top: messageEndRef.current.scrollHeight,
+        behavior: "smooth"
+      });
+    }
+    // if (messageEndRef.current) {
+    //   messageEndRef.current.scrollTop = messageEndRef.current.scrollHeight;
+    // }
+    // messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isLogin) {
@@ -195,27 +208,32 @@ const Chat = () => {
   return (
     <>
       <Wrapper>
-        <ChatBox>
+        <ChatBox ref={messageEndRef}>
           <InfoBox>실시간 채팅</InfoBox>
           {messages.map((msg, index) => (
             userInfo.nickname === msg.nickname ? (
-              <ChatItemBox>
-                <ChatItem key={index}>
-                  {msg.nickname} : {msg.content}
-                </ChatItem>
-                <ChatTime>{msg.date}</ChatTime>
-              </ChatItemBox>
-
+              <>
+                <ChatItemBox>
+                  <ChatItem key={index}>
+                    {msg.nickname} : {msg.content}
+                  </ChatItem>
+                  <ChatTime>{msg.date}</ChatTime>
+                </ChatItemBox>
+                {/* <div ref={messageEndRef} /> */}
+              </>
             ) : (
-              <ChatOtherItemBox>
-                <ChatOtherItem key={index}>
-                  {msg.nickname} : {msg.content}
-                </ChatOtherItem>
-                <ChatTime>{msg.date}</ChatTime>
-              </ChatOtherItemBox>
-
+              <>
+                <ChatOtherItemBox>
+                  <ChatOtherItem key={index}>
+                    {msg.nickname} : {msg.content}
+                  </ChatOtherItem>
+                  <ChatTime>{msg.date}</ChatTime>
+                </ChatOtherItemBox>
+                {/* <div ref={messageEndRef} /> */}
+              </>
             )
           ))}
+          {/* <div ref={messageEndRef} /> */}
         </ChatBox>
         <FormWrapper onSubmit={sendMessage}>
           <UsernameInput

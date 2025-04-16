@@ -2,10 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import fetchCommunityList from "../../services/communityList/communityListService";
 import IContent from "../../types/content";
 
-const useCommunityList = () => {
+const useCommunityList = (page: number = 0) => {
   return useQuery<IContent[]>({
-    queryKey: ['communityList'],
-    queryFn: fetchCommunityList,
+    queryKey: ['communityList', page],
+    queryFn: () => fetchCommunityList(page),
   });
 };
 

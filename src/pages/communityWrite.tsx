@@ -10,9 +10,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 2rem;
-  height: 50rem;
-  border: 1px solid #333;
-  border-radius: 1rem;
+  box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
 `;
 
 const MainContainer = styled.div`
@@ -131,6 +129,7 @@ const CommunityWrite = () => {
             type="text"
           />
           <CategorySelect value={category} onChange={(e) => setCategory(e.target.value)}>
+            <option value="" selected disabled hidden>카테고리를 선택해주세요</option>
             <option value={"팁과 노하우"}>팁과 노하우</option>
             <option value={"패치노트"}>패치노트</option>
             <option value={"자유"}>자유</option>

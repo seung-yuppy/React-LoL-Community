@@ -31,13 +31,9 @@ const Item = styled.li`
 `;
 
 const HomeTitle = styled.div`
-  font-size: 3rem;
-  padding: 7rem;
-  text-align: center;
-  color: #fff;
+  padding: 10rem 7rem;
   background: url(${img}) no-repeat;
   background-size: cover;
-  background-position: center;
 `;
 
 const Header = () => {
@@ -93,7 +89,7 @@ const Header = () => {
           }
         </Itemlist>
       </Gnb >
-      <HomeTitle>Welcome LoL Commnuity</HomeTitle>
+      <HomeTitle />
 
       {/* 모달 관리 */}
       {isOpen("loginForm") &&

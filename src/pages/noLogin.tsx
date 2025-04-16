@@ -14,9 +14,8 @@ const MainContainer = styled.div`
     justify-content: center;
     flex-direction: column;
     height: 42rem;
-    border: 1px solid #333;
     padding: 1rem 2rem;
-    border-radius: 1rem;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
 `;
 
 const TableTitle = styled.h2`

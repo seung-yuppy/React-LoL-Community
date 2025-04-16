@@ -9,7 +9,7 @@ import ico_good from "../images/ico_good.svg";
 import useModal from "../hooks/useModal";
 import useCommunity from "../hooks/community/useCommunity";
 import useCommentList from "../hooks/comment/useCommentList";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useCommentRecentList from "../hooks/comment/useCommentRecentList";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
@@ -17,15 +17,15 @@ import Toast from "../components/toast";
 import SideMenu from "../components/sideMenu";
 import formatDate from "../util/dateUtil";
 import useRecent from "../stores/useRecent";
+import fetchAddLikeCommunityList from "../services/communityList/communityListLikeService";
 
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
     width: 63rem;
-    height: 50rem;
-    overflow-y: scroll;
     position: relative;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
 `;
 
 const MainContainer = styled.div`
@@ -33,9 +33,7 @@ const MainContainer = styled.div`
     flex-direction: column;
     gap: 1.5rem;
     width: 60rem;
-    border: 1px solid #333;
     padding: 1rem 2rem;
-    border-radius: 1rem;
 `;
 
 const Title = styled.h2`
@@ -56,7 +54,6 @@ const HeaderContent1 = styled.h2`
 
 const HeaderContent2 = styled(HeaderContent1)`
     font-size: 1rem;
-    color:gray;
 `;
 
 const Dynamiccontent = styled.div`
@@ -64,7 +61,7 @@ const Dynamiccontent = styled.div`
     flex-direction: column;
     padding: 2rem 1rem;
     border-top: 1px solid #333;
-    border-bottom: 1px solid #333;
+    /* border-bottom: 1px solid #333; */
     gap: 1rem;
 
     img {
@@ -78,6 +75,7 @@ const Dynamiccontent = styled.div`
 `;
 
 const FormWrapper = styled.form`
+    margin-top: 5rem;
     display:flex;
     gap: 1rem;
 `;
@@ -110,6 +108,15 @@ const CommentBox = styled.div`
     gap: 1rem;
     border-bottom: 1px solid lightgray;
     padding: 1rem;
+`;
+
+const CommentBox1 = styled.div`
+    display:flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-bottom: 1px solid lightgray;
+    padding: 1rem;
+    background-color: #ebebeb;
 `;
 
 const TableTitle = styled.h2`
@@ -163,6 +170,13 @@ const DeleteButton = styled(ReplyButton)`
     padding: 0.3rem;
     border-radius: 0.5rem;
     color: crimson;
+`;
+
+const LikeButton = styled(ReplyButton)`
+    border: 1px solid #08ccac;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+    color: #08ccac;
 `;
 
 const GoodComment = styled.img`
@@ -421,6 +435,28 @@ const Community = () => {
         }
     };
 
+    // 좋아요 mutation
+    const addLike = useMutation({
+        mutationFn: fetchAddLikeCommunityList,
+        onSuccess: (data) => {
+            if (data === "이미 좋아요를 누르셨습니다.") {
+                openModal("dupLike");
+            } else if (data === "이 글을 좋아합니다.") {
+                openModal("like");
+                queryClient.invalidateQueries({ queryKey: ["community"] });
+            } else {
+                openModal("loginAlert");
+            }
+        },
+        onError: (error) => {
+            console.error("좋아요 실패", error);
+        },
+    });
+
+    const handleLikeClick = (id: number) => {
+        addLike.mutate(id);
+    };
+
     return (
         <>
             <SideMenu />
@@ -433,11 +469,15 @@ const Community = () => {
                                 <HeaderContent1>{communityPost.category} | {formatDate(communityPost.updatedAt)} | {communityPost.nickname}</HeaderContent1>
                                 <HeaderContent2>조회수 {communityPost.viewsCount} | 댓글 {communityPost.commentsCount} | 추천 {communityPost.likesCount}</HeaderContent2>
                             </ContentHeader>
-                            {communityPost.nickname === userInfo.nickname &&
-                                <ButtonContainer>
-                                    <Link to={`/community/${communityPost.id}/edit`}><EditButton>수정</EditButton></Link>
-                                    <DeleteButton onClick={() => openModal("deleteCommunity")}>삭제</DeleteButton>
-                                </ButtonContainer>}
+                            <ButtonContainer>
+                                {communityPost.nickname === userInfo.nickname &&
+                                    <>
+                                        <Link to={`/community/${communityPost.id}/edit`}><EditButton>수정</EditButton></Link>
+                                        <DeleteButton onClick={() => openModal("deleteCommunity")}>삭제</DeleteButton>
+                                    </>
+                                }
+                                <LikeButton onClick={() => handleLikeClick(communityPost.id)}>추천</LikeButton>
+                            </ButtonContainer>
                         </InfoHeader>
                         <Dynamiccontent
                             dangerouslySetInnerHTML={{
@@ -452,7 +492,7 @@ const Community = () => {
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                             />
-                            <Btn type="submit">전송</Btn>
+                            <Btn type="submit">작성</Btn>
                         </FormWrapper>
 
                         {getFilteredComments()?.length !== 0 &&
@@ -513,13 +553,13 @@ const Community = () => {
                                                 value={reply}
                                                 onChange={(e) => setReply(e.target.value)}
                                             />
-                                            <Btn type="submit">전송</Btn>
+                                            <Btn type="submit">작성</Btn>
                                         </FormWrapper>
                                     }
                                 </ButtonContainer>
                                 {/* 대댓글 영역 */}
                                 {comment.children && comment.children.map((reply) => (
-                                    <CommentBox>
+                                    <CommentBox1>
                                         <CommentHeader1>
                                             <TeamLogo src={reply.imageUrl} alt="이미지 없음" />
                                             <HeaderContent2>{reply.nickname} | {formatDate(reply.createdAt)}</HeaderContent2>
@@ -535,7 +575,7 @@ const Community = () => {
                                                 <GoodComment src={ico_bad} alt="이미지 없음" onClick={() => hateComment(reply)} />
                                             </GoodBtn>
                                         </GoodBox>
-                                    </CommentBox>
+                                    </CommentBox1>
                                 ))}
                                 {/* 댓글 삭제 알림 모달 */}
                                 {isOpen("deleteComment") &&

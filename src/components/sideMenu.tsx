@@ -4,14 +4,14 @@ import Modal from "./modal";
 import LoginForm from "./loginForm";
 import { Link, useNavigate } from "react-router-dom";
 import useModal from "../hooks/useModal";
-import { useEffect, useState } from "react";
 import useRecent from "../stores/useRecent";
 
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
-    border: 1px solid #333;
-    border-radius: 1rem;
+    /* border: 1px solid #333; */
+    /* border-radius: 1rem; */
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
     height: 50rem;
     width: 20rem;
     padding: 2rem;
@@ -25,11 +25,6 @@ const LoginButton = styled.button`
     font-size: 1.2rem;
     border-radius:0.5rem;
     cursor: pointer;
-`;
-
-const LogoutButton = styled(LoginButton)`
-    background-color: crimson;
-    border: crimson;
 `;
 
 const InfoBox = styled.div`
@@ -89,7 +84,7 @@ const SideMenu = ({ onFilter }: { onFilter: (filterType: string) => void; }) => 
     return (
         <>
             <Wrapper>
-                {isLogin ? <LogoutButton onClick={onLogout}>로그아웃</LogoutButton> : <LoginButton onClick={onLogin}>로그인</LoginButton>}
+                {isLogin ? <LoginButton onClick={onLogout}>로그아웃</LoginButton> : <LoginButton onClick={onLogin}>로그인</LoginButton>}
                 <InfoBox>
                     <InfoTitle>최근 본 글</InfoTitle>
                     {isLogin && recentArr.map((item) => (

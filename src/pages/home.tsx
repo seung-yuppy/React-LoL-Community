@@ -17,8 +17,8 @@ const CommunityWrapper = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    height: 50rem;
     width: 55rem;
+    padding-bottom: 1rem;
 `;
 
 const LoadingWrapper = styled.div`
@@ -27,9 +27,30 @@ const LoadingWrapper = styled.div`
     font-weight: bold;
 `;
 
+const Pagination = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+`;
+
+const PageButton = styled.button<{ isActive: boolean }>`
+    padding: 0.5rem 1rem;
+    background: ${({ isActive }) => (isActive ? "#08ccac" : "#fff")};
+    color: ${({ isActive }) => (isActive ? "#fff" : "#08ccac")};
+    border: 1px solid #ddd;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    font-weight: ${({ isActive }) => (isActive ? "bold" : "normal")};
+    &:hover {
+        background: #eee;
+    }
+`;
+
 const Home = () => {
     const { isLogin, setInfo } = useAuth(); // userInfo에 값을 넣기 위해서 useEffect와 만들었다
-    const { data: communityList, isLoading: isCommunityListLoading } = useCommunityList();
+    const [page, setPage] = useState(0);
+    const { data: communityList, isLoading: isCommunityListLoading } = useCommunityList(page);
     const { data: communityPopularList, isLoading: isCommunityPopularListLoading } = useCommunityPopularList();
     const [searchQuery, setSearchQuery] = useState("");
     const { data: communitySearchList, isLoading: isCommunitySearchListLoading } = useCommunitySearchList(searchQuery);
@@ -112,6 +133,12 @@ const Home = () => {
         setSearchCategory(category);
         setSelectedCategory(null); // 검색 시 카테고리 초기화
     };
+
+    // 페이지 버튼 핸들러
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+    };
+
     return (
         <>
             <SideMenu onFilter={handleFilter} />
@@ -123,7 +150,21 @@ const Home = () => {
                     </LoadingWrapper>
                 )}
                 {isLogin ? (
-                    <Communities communityList={filteredList} />
+                    <>
+                        <Communities communityList={filteredList} />
+                        <Pagination>
+                            {[0, 1].map((num) => (
+                                <PageButton
+                                    key={num}
+                                    isActive={page === num}
+                                    onClick={() => handlePageChange(num)}
+                                >
+                                    {num + 1}
+                                </PageButton>
+                            ))}
+                        </Pagination>
+                    </>
+
                 ) : (
                     <NoLogin />
                 )}
