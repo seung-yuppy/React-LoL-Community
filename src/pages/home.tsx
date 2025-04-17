@@ -60,6 +60,7 @@ const Home = () => {
     const [filteredList, setFilteredList] = useState(communityList);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [searchCategory, setSearchCategory] = useState("제목");
+    const maxPage = 100;
 
     // 선택된 카테고리에 따라 데이터를 가져오기
     const { data: communityCategoryList, isLoading: isCategoryLoading } = useCategoryCommunityList(selectedCategory || "");
@@ -134,9 +135,17 @@ const Home = () => {
         setSelectedCategory(null); // 검색 시 카테고리 초기화
     };
 
+    // // 페이지 버튼 핸들러
+    // const handlePageChange = (newPage: number) => {
+    //     setPage(newPage);
+    // };
+
     // 페이지 버튼 핸들러
-    const handlePageChange = (newPage: number) => {
-        setPage(newPage);
+    const handlePrevPage = () => {
+        if (page > 0) setPage(page - 1);
+    };
+    const handleNextPage = () => {
+        if (page < maxPage) setPage(page + 1);
     };
 
     return (
@@ -152,7 +161,7 @@ const Home = () => {
                 {isLogin ? (
                     <>
                         <Communities communityList={filteredList} />
-                        <Pagination>
+                        {/* <Pagination>
                             {[0, 1, 2, 3].map((num) => (
                                 <PageButton
                                     key={num}
@@ -162,6 +171,23 @@ const Home = () => {
                                     {num + 1}
                                 </PageButton>
                             ))}
+                        </Pagination> */}
+                        <Pagination>
+                            {page !== 0 && <PageButton
+                                isActive={false}
+                                onClick={handlePrevPage}
+                                disabled={page === 0}
+                            >
+                                이전
+                            </PageButton>}
+
+                            <PageButton
+                                isActive={false}
+                                onClick={handleNextPage}
+                                disabled={page === maxPage}
+                            >
+                                다음
+                            </PageButton>
                         </Pagination>
                     </>
 
