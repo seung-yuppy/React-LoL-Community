@@ -61,12 +61,16 @@ const Dynamiccontent = styled.div`
     flex-direction: column;
     padding: 2rem 1rem;
     border-top: 1px solid #333;
-    /* border-bottom: 1px solid #333; */
-    gap: 1rem;
+    /* gap: 1rem; */
+
+    figure {
+        padding: 0;
+        margin: 0;
+    }
 
     img {
-        width: 20rem;
-        height: 20rem;
+        width: 100%;
+        object-fit: contain;
     }
 
     p {

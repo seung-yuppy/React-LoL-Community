@@ -50,7 +50,7 @@ const TableBodytd = styled.div`
 `;
 
 const TableTitle = styled.h2`
-    font-size:1.3rem;
+    font-size:  1.3rem;
     font-weight: bold;
 `;
 
@@ -63,6 +63,7 @@ const BoxInfo = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1.3rem;
+    width: 20rem;
 `;
 
 const ButtonContainer = styled.div`
