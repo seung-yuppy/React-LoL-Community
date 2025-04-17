@@ -193,13 +193,13 @@ function SelectUserInfo() {
       {/* 모달 관리 */}
       {
         showDupModal &&
-        <Modal onClick={() => setShowDupModal(false)}>
+        <Modal onClose={() => setShowDupModal(false)}>
           <Title>중복된 닉네임 입니다. 다시 닉네임을 입력해주세요.</Title>
         </Modal>
       }
       {
         showComModal &&
-        <Modal onClick={() => { setShowComModal(false); navigate("/mypage"); window.location.reload(); }}>
+        <Modal onClose={() => { setShowComModal(false); navigate("/mypage"); window.location.reload(); }}>
           <Title>{nickname}님 가입을 축하드립니다!</Title>
         </Modal>
       }

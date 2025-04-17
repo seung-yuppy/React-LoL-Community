@@ -153,7 +153,7 @@ const Home = () => {
                     <>
                         <Communities communityList={filteredList} />
                         <Pagination>
-                            {[0, 1].map((num) => (
+                            {[0, 1, 2, 3].map((num) => (
                                 <PageButton
                                     key={num}
                                     isActive={page === num}
