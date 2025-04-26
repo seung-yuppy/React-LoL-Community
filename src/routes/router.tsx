@@ -10,6 +10,9 @@ import Community from "../pages/community";
 import CommunityEdit from "../pages/communityEdit";
 import EditNickname from "../pages/editNickname";
 import EditTeamimage from "../pages/editTeamimage";
+import Popular from "../pages/popular";
+import Search from "../pages/search";
+import Category from "../pages/category";
 
 const Router = createBrowserRouter([
     {
@@ -17,9 +20,24 @@ const Router = createBrowserRouter([
         element: <App />,
         children: [
             {
-                path: "",
+                path: ":page",
                 element: <Home />,
                 errorElement: <ErrorComponent />,
+            },
+            {
+                path: "10popular",
+                element: <Popular />,
+                errorElement: <ErrorComponent />,
+            },
+            {
+                path: "search/:category/:searchQuery/:page",
+                element: <Search />,
+                errorElement: <ErrorComponent />,
+            },
+            {
+                path: "category/:category",
+                element: <Category />,
+                errorElement: <ErrorComponent />
             },
             {
                 path: "mypage",

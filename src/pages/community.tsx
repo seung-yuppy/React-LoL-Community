@@ -227,8 +227,12 @@ const Community = () => {
     const { data: commentList } = useCommentList(communityId ?? "");
     const { data: commentRecentList } = useCommentRecentList(communityId ?? "");
     const [notifications, setNotifications] = useState<Notification[]>([]);
-
     const { setRecentArr } = useRecent();
+
+    // 최근 본 글 불러오기(communityId가 바뀔 때마다 재랜더링)
+    useEffect(() => {
+        queryClient.invalidateQueries({ queryKey: ["community"] });
+    }, [communityId, queryClient])
 
     useEffect(() => {
         // WebSocket 엔드포인트 설정 (Spring Boot WebSocket 경로)
@@ -249,7 +253,7 @@ const Community = () => {
         return () => {
             stompClient.deactivate();
         };
-    }, [userInfo]);
+    }, [userInfo, communityId]);
 
     useEffect(() => {
         if (communityId && communityPost) {

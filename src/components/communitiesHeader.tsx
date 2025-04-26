@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import ico_write from "../images/ico_write.svg"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SearchForm from "./searchForm";
 import useAuth from "../stores/useAuth";
 import useModal from "../hooks/useModal";
@@ -9,9 +9,7 @@ import Modal from "./modal";
 const HeaderContainer = styled.div`
     display: flex;
     flex-direction: column;
-    /* border: 1px solid #333; */
     padding: 0 2rem;
-    /* border-radius: 1rem; */
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
 `;
 
@@ -53,30 +51,17 @@ const TableTitle = styled.h2`
     font-weight: bold;
 `;
 
-const CommunitiesHeader = ({
-    onFilter,
-    onSearch,
-}: {
-    onFilter: (filterType: string) => void;
-    onSearch: (searchQuery: string, category: string) => void;
-}) => {
+const CommunitiesHeader = () => {
     const { isLogin, userInfo } = useAuth();
     const { isOpen, openModal, closeModal } = useModal();
-
-    const handleFilterClick = (filterType: string) => {
-        if (!isLogin) {
-            openModal("loginAlert");
-            return;
-        }
-        onFilter(filterType);
-    };
+    const navigate = useNavigate();
 
     const handleSearchSubmit = (searchQuery: string, category: string) => {
         if (!isLogin) {
             openModal("loginAlert");
             return;
         }
-        onSearch(searchQuery, category);
+        navigate(`/search/${category}/${searchQuery}/0`);
     };
 
     return (
@@ -87,8 +72,8 @@ const CommunitiesHeader = ({
                 </WriteBtnBox>
                 <TableHeader>
                     <FilterBtnContainer>
-                        <FilterBtn onClick={() => handleFilterClick("recent")}>최신</FilterBtn>
-                        <FilterBtn onClick={() => handleFilterClick("popularity")}>10추</FilterBtn>
+                        <Link to={`/0`}><FilterBtn>최신</FilterBtn></Link>
+                        <Link to={`/10popular`}><FilterBtn>10추</FilterBtn></Link>
                     </FilterBtnContainer>
                     <SearchForm onSendSearch={handleSearchSubmit} />
                 </TableHeader>

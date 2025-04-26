@@ -9,8 +9,6 @@ import useRecent from "../stores/useRecent";
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
-    /* border: 1px solid #333; */
-    /* border-radius: 1rem; */
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.3);
     height: 50rem;
     width: 20rem;
@@ -53,10 +51,10 @@ const InfoMenu = styled.button`
 const RecentItem = styled.p`
     font-size: 1rem;
     padding: 1rem 0.3rem;
-    text-align: center;
+    text-align: left;
 `;
 
-const SideMenu = ({ onFilter }: { onFilter: (filterType: string) => void; }) => {
+const SideMenu = () => {
     const navigate = useNavigate();
     const { isLogin, logout } = useAuth();
     const { isOpen, openModal, closeModal } = useModal();
@@ -73,12 +71,8 @@ const SideMenu = ({ onFilter }: { onFilter: (filterType: string) => void; }) => 
             method: "POST",
             credentials: "include",
         });
-        navigate("/");
+        navigate("/0");
         logout();
-    };
-
-    const handleFilterClick = (filterType: string) => {
-        onFilter(filterType);
     };
 
     return (
@@ -95,15 +89,15 @@ const SideMenu = ({ onFilter }: { onFilter: (filterType: string) => void; }) => 
                 </InfoBox>
                 <InfoBox>
                     <InfoTitle>정보</InfoTitle>
-                    <InfoMenu onClick={() => handleFilterClick("팁과 노하우")}>팁과 노하우</InfoMenu>
-                    <InfoMenu onClick={() => handleFilterClick("패치노트")}>패치노트</InfoMenu>
+                    <Link to={`/category/팁과 노하우`}><InfoMenu>팁과 노하우</InfoMenu></Link>
+                    <Link to={`/category/패치노트`}><InfoMenu>패치노트</InfoMenu></Link>
                 </InfoBox>
                 <RecentBox>
                     <InfoTitle>커뮤니티</InfoTitle>
-                    <InfoMenu onClick={() => handleFilterClick("자유")}>자유</InfoMenu>
-                    <InfoMenu onClick={() => handleFilterClick("유머")}>유머</InfoMenu>
-                    <InfoMenu onClick={() => handleFilterClick("질문")}>질문</InfoMenu>
-                    <InfoMenu onClick={() => handleFilterClick("자랑글")}>자랑글</InfoMenu>
+                    <Link to={`/category/자유`}><InfoMenu>자유</InfoMenu></Link>
+                    <Link to={`/category/유머`}><InfoMenu>유머</InfoMenu></Link>
+                    <Link to={`/category/질문`}><InfoMenu>질문</InfoMenu></Link>
+                    <Link to={`/category/자랑글`}><InfoMenu>자랑글</InfoMenu></Link>
                 </RecentBox>
             </Wrapper>
 

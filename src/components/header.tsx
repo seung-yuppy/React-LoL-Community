@@ -67,7 +67,7 @@ const Header = () => {
       method: "POST",
       credentials: "include",
     });
-    navigate("/");
+    navigate("/0");
     logout();
   };
 
@@ -75,7 +75,7 @@ const Header = () => {
     <>
       <Gnb>
         <Itemlist>
-          <Item><Link to="/">HOME</Link></Item>
+          <Item><Link to="/0">HOME</Link></Item>
           {!isLogin ?
             <Item onClick={() => openModal("loginForm")}>
               LOG IN

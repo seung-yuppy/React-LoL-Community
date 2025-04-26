@@ -5,13 +5,8 @@ import useAuth from "../stores/useAuth";
 import { useEffect, useState } from "react";
 import useCommunityList from "../hooks/communityList/useCommunityList";
 import NoLogin from "./noLogin";
-import useCommunityPopularList from "../hooks/communityList/useCommuityPopularList";
-import useCommunitySearchList from "../hooks/communityList/useCommunitySearchList";
 import SideMenu from "../components/sideMenu";
-import useCategoryCommunityList from "../hooks/communityList/useCommunityCategoryList";
-import useCommunitySearchContentList from "../hooks/communityList/useCommunitySearchContentList";
-import useCommunitySearchNicknameList from "../hooks/communityList/useCommunitySearchNicknameList";
-import useCommunitySearchTitleContentList from "../hooks/communityList/useCommunitySearchTitleContentList";
+import { useNavigate, useParams } from "react-router-dom";
 
 const CommunityWrapper = styled.div`
     display: flex;
@@ -48,22 +43,11 @@ const PageButton = styled.button<{ isActive: boolean }>`
 `;
 
 const Home = () => {
+    const pageParam = useParams();
+    const navigate = useNavigate();
     const { isLogin, setInfo } = useAuth(); // userInfo에 값을 넣기 위해서 useEffect와 만들었다
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(Number(pageParam.page) || 0);
     const { data: communityList, isLoading: isCommunityListLoading } = useCommunityList(page);
-    const { data: communityPopularList, isLoading: isCommunityPopularListLoading } = useCommunityPopularList();
-    const [searchQuery, setSearchQuery] = useState("");
-    const { data: communitySearchList, isLoading: isCommunitySearchListLoading } = useCommunitySearchList(searchQuery);
-    const { data: communitySearchContentList } = useCommunitySearchContentList(searchQuery);
-    const { data: communitySearchNicknameList } = useCommunitySearchNicknameList(searchQuery);
-    const { data: communitySearchTitleContentList } = useCommunitySearchTitleContentList(searchQuery);
-    const [filteredList, setFilteredList] = useState(communityList);
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [searchCategory, setSearchCategory] = useState("제목");
-    const maxPage = 100;
-
-    // 선택된 카테고리에 따라 데이터를 가져오기
-    const { data: communityCategoryList, isLoading: isCategoryLoading } = useCategoryCommunityList(selectedCategory || "");
 
     useEffect(() => {
         if (isLogin) {
@@ -83,111 +67,47 @@ const Home = () => {
         }
     }, [isLogin, setInfo]);
 
-    // 검색 및 필터링 로직
-    useEffect(() => {
-        if (searchQuery) {
-            if (searchCategory === "제목") {
-                setFilteredList(communitySearchList);
-                setSelectedCategory(null);
-            } else if (searchCategory === "내용") {
-                setFilteredList(communitySearchContentList);
-                setSelectedCategory(null);
-            } else if (searchCategory === "작성자") {
-                setFilteredList(communitySearchNicknameList);
-                setSelectedCategory(null);
-            } else if (searchCategory === "제목+내용") {
-                setFilteredList(communitySearchTitleContentList);
-                setSelectedCategory(null);
-            }
-        } else if (!searchQuery && selectedCategory && communityCategoryList) {
-            setFilteredList(communityCategoryList);
-        } else if (!searchQuery && !selectedCategory && communityList) {
-            setFilteredList(communityList);
-        }
-    }, [
-        searchQuery,
-        searchCategory,
-        selectedCategory,
-        communitySearchList,
-        communitySearchTitleContentList,
-        communitySearchContentList,
-        communitySearchNicknameList,
-        communityCategoryList,
-        communityList,
-    ]);
-
-    const handleFilter = (filterType: string) => {
-        if (filterType === "recent") {
-            setFilteredList(communityList);
-            setSelectedCategory(null); // 카테고리 초기화
-        } else if (filterType === "popularity") {
-            setFilteredList(communityPopularList);
-            setSelectedCategory(null); // 카테고리 초기화
-        } else {
-            setSelectedCategory(filterType); // 선택된 카테고리 업데이트
-        }
-    };
-
-    // 검색 핸들러
-    const handleSearch = (query: string, category: string) => {
-        setSearchQuery(query);
-        setSearchCategory(category);
-        setSelectedCategory(null); // 검색 시 카테고리 초기화
-    };
-
-    // // 페이지 버튼 핸들러
-    // const handlePageChange = (newPage: number) => {
-    //     setPage(newPage);
-    // };
-
     // 페이지 버튼 핸들러
     const handlePrevPage = () => {
-        if (page > 0) setPage(page - 1);
+        const newPage = page - 1;
+        setPage(newPage);
+        navigate(`/${newPage}`);
     };
     const handleNextPage = () => {
-        if (page < maxPage) setPage(page + 1);
+        const newPage = page + 1;
+        setPage(newPage);
+        navigate(`/${newPage}`);
     };
 
     return (
         <>
-            <SideMenu onFilter={handleFilter} />
+            <SideMenu />
             <CommunityWrapper>
-                <CommunitiesHeader onFilter={handleFilter} onSearch={handleSearch} />
-                {(isCommunityListLoading || isCommunityPopularListLoading || isCommunitySearchListLoading || isCategoryLoading) && (
+                <CommunitiesHeader />
+                {isCommunityListLoading && (
                     <LoadingWrapper>
                         로딩중입니다....
                     </LoadingWrapper>
                 )}
                 {isLogin ? (
                     <>
-                        <Communities communityList={filteredList} />
-                        {/* <Pagination>
-                            {[0, 1, 2, 3].map((num) => (
-                                <PageButton
-                                    key={num}
-                                    isActive={page === num}
-                                    onClick={() => handlePageChange(num)}
-                                >
-                                    {num + 1}
-                                </PageButton>
-                            ))}
-                        </Pagination> */}
+                        <Communities communityList={communityList} />
                         <Pagination>
-                            {page !== 0 && <PageButton
-                                isActive={false}
-                                onClick={handlePrevPage}
-                                disabled={page === 0}
-                            >
-                                이전
-                            </PageButton>}
-
-                            <PageButton
-                                isActive={false}
-                                onClick={handleNextPage}
-                                disabled={page === maxPage}
-                            >
-                                다음
-                            </PageButton>
+                            {page !== 0 &&
+                                <PageButton
+                                    isActive={false}
+                                    onClick={handlePrevPage}
+                                    disabled={page === 0}
+                                >
+                                    이전
+                                </PageButton>}
+                            {communityList?.length === 20 &&
+                                <PageButton
+                                    isActive={false}
+                                    onClick={handleNextPage}
+                                >
+                                    다음
+                                </PageButton>}
                         </Pagination>
                     </>
 
