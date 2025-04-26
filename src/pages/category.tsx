@@ -2,7 +2,6 @@ import styled from "styled-components";
 import NoLogin from "./noLogin";
 import useAuth from "../stores/useAuth";
 import { useState } from "react";
-import SideMenu from "../components/sideMenu";
 import CommunitiesHeader from "../components/communitiesHeader";
 import Communities from "../components/communities";
 import useCategoryCommunityList from "../hooks/communityList/useCommunityCategoryList";
@@ -60,7 +59,6 @@ const Category = () => {
 
   return (
     <>
-      <SideMenu />
       <CommunityWrapper>
         <CommunitiesHeader />
         {isCategoryLoading && (

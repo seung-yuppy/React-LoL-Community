@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import SideMenu from "../components/sideMenu";
 import { useEffect, useState } from "react";
 import { ITeamImage } from "../types/api";
 import { useNavigate } from "react-router-dom";
@@ -115,7 +114,6 @@ const EditTeamimage = () => {
 
   return (
     <>
-      <SideMenu />
       <Wrapper>
         <Title>좋아하는 팀 수정</Title>
         <FormWrapper onSubmit={handleEdit}>

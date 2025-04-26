@@ -5,7 +5,6 @@ import useAuth from "../stores/useAuth";
 import { useEffect, useState } from "react";
 import useCommunityList from "../hooks/communityList/useCommunityList";
 import NoLogin from "./noLogin";
-import SideMenu from "../components/sideMenu";
 import { useNavigate, useParams } from "react-router-dom";
 
 const CommunityWrapper = styled.div`
@@ -81,7 +80,6 @@ const Home = () => {
 
     return (
         <>
-            <SideMenu />
             <CommunityWrapper>
                 <CommunitiesHeader />
                 {isCommunityListLoading && (

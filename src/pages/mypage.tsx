@@ -8,7 +8,6 @@ import IUserInfo from "../types/userInfo";
 import IContent from "../types/content";
 import IComment from "../types/comment";
 import ico_arrow_turn_down from "../images/ico_arrow_turn_down.svg";
-import SideMenu from "../components/sideMenu";
 
 const Wrapper = styled.div`
   display: flex;
@@ -245,7 +244,6 @@ const MyPage = () => {
 
   return (
     <>
-      <SideMenu />
       <Wrapper>
         <Title>{user?.name}님, 안녕하세요!</Title>
         {/* 유저 정보 영역 */}

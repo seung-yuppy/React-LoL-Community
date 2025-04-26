@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import NoLogin from "./noLogin";
-import SideMenu from "../components/sideMenu";
 import useAuth from "../stores/useAuth";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -85,7 +84,6 @@ const Search = () => {
 
   return (
     <>
-      <SideMenu />
       <CommunityWrapper>
         <CommunitiesHeader />
         {isCommunitySearchListLoading && (

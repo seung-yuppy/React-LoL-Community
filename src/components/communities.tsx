@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import ico_up from "../images/ico_up.svg"
 import ico_down from "../images/ico_down.svg";
@@ -8,6 +8,7 @@ import Modal from "./modal";
 import IContent from "../types/content";
 import fetchAddLikeCommunityList from "../services/communityList/communityListLikeService";
 import formatDate from "../util/dateUtil";
+import useAuth from "../stores/useAuth";
 
 const Wrapper = styled.div`
     display: flex;
@@ -64,6 +65,7 @@ const BoxInfo = styled.div`
     flex-direction: column;
     gap: 1.3rem;
     width: 20rem;
+    cursor: pointer;
 `;
 
 const ButtonContainer = styled.div`
@@ -96,6 +98,8 @@ const Thumbnail = styled.div`
 
 const Communities = ({ communityList }: { communityList: IContent[] | undefined }) => {
     const queryClient = useQueryClient();
+    const { userInfo } = useAuth();
+    const navigate = useNavigate();
     const { isOpen, openModal, closeModal } = useModal();
 
     // 좋아요 mutation
@@ -120,6 +124,15 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
         addLike.mutate(id);
     };
 
+    const handleClick = (id: number) => {
+        if (!userInfo) {
+            openModal("noLogin");
+        } else {
+            navigate(`/community/${id}`);
+        }
+
+    }
+
     return (
         <>
             <Wrapper>
@@ -136,16 +149,14 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
                                         <SearchImage src={ico_down} alt="이미지 없음" />
                                     </LikeButton>
                                 </ButtonContainer>
-                                <Link to={`/community/${community.id}`}>
-                                    <BoxInfo>
-                                        <TableBodytd>
-                                            <TableTitle>{community.title} [{community.commentsCount}]</TableTitle>
-                                        </TableBodytd>
-                                        <TableBodytd>
-                                            <TableDate>조회수:{community.viewsCount} | {formatDate(community.updatedAt)}  | {community.nickname}</TableDate>
-                                        </TableBodytd>
-                                    </BoxInfo>
-                                </Link>
+                                <BoxInfo onClick={() => handleClick(community.id)}>
+                                    <TableBodytd>
+                                        <TableTitle>{community.title} [{community.commentsCount}]</TableTitle>
+                                    </TableBodytd>
+                                    <TableBodytd>
+                                        <TableDate>조회수:{community.viewsCount} | {formatDate(community.updatedAt)}  | {community.nickname}</TableDate>
+                                    </TableBodytd>
+                                </BoxInfo>
                                 {community.content.includes("<figure") &&
                                     <ImgBox>
                                         <Thumbnail dangerouslySetInnerHTML={{
@@ -160,6 +171,11 @@ const Communities = ({ communityList }: { communityList: IContent[] | undefined 
             </Wrapper>
 
             {/* 모달 관리 */}
+            {isOpen("noLogin") && (
+                <Modal onClose={() => { closeModal("noLogin"); navigate("/mypage/userinfo") }}>
+                    <TableTitle>닉네임을 정해주세요.</TableTitle>
+                </Modal>
+            )}
             {isOpen("like") && (
                 <Modal onClose={() => closeModal("like")}>
                     <TableTitle>이 글을 좋아합니다.❤️</TableTitle>

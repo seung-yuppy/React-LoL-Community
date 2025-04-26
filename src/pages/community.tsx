@@ -14,7 +14,6 @@ import useCommentRecentList from "../hooks/comment/useCommentRecentList";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import Toast from "../components/toast";
-import SideMenu from "../components/sideMenu";
 import formatDate from "../util/dateUtil";
 import useRecent from "../stores/useRecent";
 import fetchAddLikeCommunityList from "../services/communityList/communityListLikeService";
@@ -467,7 +466,6 @@ const Community = () => {
 
     return (
         <>
-            <SideMenu />
             <Wrapper>
                 {communityPost && (
                     <MainContainer key={communityPost.id}>

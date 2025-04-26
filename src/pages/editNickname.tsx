@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import SideMenu from "../components/sideMenu";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -91,7 +90,6 @@ const EditNickname = () => {
   };
   return (
     <>
-      <SideMenu />
       <Wrapper>
         <Title>닉네임 수정</Title>
         <FormWrapper onSubmit={handleEdit}>

@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import SideMenu from "../components/sideMenu";
 import useCommunityPopularList from "../hooks/communityList/useCommuityPopularList";
 import useAuth from "../stores/useAuth";
 import Communities from "../components/communities";
@@ -57,7 +56,6 @@ const Popular = () => {
 
   return (
     <>
-      <SideMenu />
       <CommunityWrapper>
         <CommunitiesHeader />
         {isCommunityPopularListLoading && (
