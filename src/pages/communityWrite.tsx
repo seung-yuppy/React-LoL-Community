@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../components/modal";
+import { Plugin } from "ckeditor5";
 
 const Wrapper = styled.div`
   display: flex;
@@ -51,6 +52,27 @@ const CategorySelect = styled.select`
   background-color: #fff;
   color: #333;
 `;
+
+class AutoEmbedPlugin extends Plugin {
+  init() {
+    const editor = this.editor;
+    editor.conversion.for('upcast').elementToElement({
+      view: {
+        name: 'oembed',
+        attributes: {
+          url: true
+        }
+      },
+      model: (viewElement, { writer: modelWriter }) => {
+        const url = viewElement.getAttribute('url');
+        const iframeSrc = url.replace('https://youtu.be/', 'https://www.youtube.com/embed/');
+        return modelWriter.createElement('htmlEmbed', {
+          value: `<iframe width="560" height="315" src="${iframeSrc}" frameborder="0" allowfullscreen></iframe>`
+        });
+      }
+    });
+  }
+}
 
 const CommunityWrite = () => {
   const [title, setTitle] = useState<string>(""); // 글 제목
@@ -140,7 +162,10 @@ const CommunityWrite = () => {
             config={{
               licenseKey: "GPL",
               placeholder: "내용을 입력하세요.",
-              extraPlugins: [uploadPlugin],
+              extraPlugins: [uploadPlugin, AutoEmbedPlugin],
+              htmlEmbed: {
+                showPreviews: true,
+              },
             }}
             data=""
             onChange={(_, editor) => {
