@@ -65,7 +65,7 @@ class AutoEmbedPlugin extends Plugin {
       },
       model: (viewElement, { writer: modelWriter }) => {
         const url = viewElement.getAttribute('url');
-        const iframeSrc = url.replace('https://youtu.be/', 'https://www.youtube.com/embed/');
+        const iframeSrc = url?.replace('https://youtu.be/', 'https://www.youtube.com/embed/');
         return modelWriter.createElement('htmlEmbed', {
           value: `<iframe width="560" height="315" src="${iframeSrc}" frameborder="0" allowfullscreen></iframe>`
         });
