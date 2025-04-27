@@ -156,7 +156,7 @@ const CommunityWrite = () => {
 
       {/* 모달 관리 */}
       {showConfirmModal &&
-        <Modal onClose={() => { setShowConfirmModal(false); navigate("/") }}>
+        <Modal onClose={() => { setShowConfirmModal(false); navigate("/0") }}>
           <Title> 글 등록을 완료하였습니다.</Title >
         </Modal >
       }

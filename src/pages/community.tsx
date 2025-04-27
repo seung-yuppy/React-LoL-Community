@@ -271,7 +271,7 @@ const Community = () => {
                     credentials: "include",
                 }
             );
-            navigate("/");
+            navigate("/0");
         } catch (error) {
             console.error("게시글 삭제 오류", error);
             openModal("deleteCommunity");
