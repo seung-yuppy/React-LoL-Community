@@ -66,13 +66,19 @@ const SideMenu = () => {
     };
 
     // 로그아웃
-    const onLogout = async () => {
-        await fetch(`http://localhost:8080/logout`, {
-            method: "POST",
-            credentials: "include",
-        });
-        navigate("/0");
-        logout();
+    const onLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        try {
+            await fetch(`https://render-host-rw27.onrender.com/logout`, {
+                method: "POST",
+                credentials: "include",
+            });
+            logout();
+            navigate("/0");
+        } catch (error) {
+            console.error("로그아웃 오류", error);
+        }
+
     };
 
     return (

@@ -64,7 +64,7 @@ const CommunityEdit = () => {
     useEffect(() => {
         (async () => {
             const response = await fetch(
-                `http://localhost:8080/community/${communityId}`,
+                `https://render-host-rw27.onrender.com/community/${communityId}`,
                 {
                     method: "GET",
                     credentials: "include",
@@ -83,7 +83,7 @@ const CommunityEdit = () => {
         category: string
     ) => {
         e.preventDefault();
-        await fetch(`http://localhost:8080/community/${communityId}`, {
+        await fetch(`https://render-host-rw27.onrender.com/community/${communityId}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -101,7 +101,7 @@ const CommunityEdit = () => {
                     const formData = new FormData();
                     loader.file.then((file: File) => {
                         formData.append("upload", file);
-                        fetch(`http://localhost:8080/image/upload`, {
+                        fetch(`https://render-host-rw27.onrender.com/image/upload`, {
                             method: "POST",
                             body: formData,
                             credentials: "include",

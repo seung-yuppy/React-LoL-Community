@@ -77,7 +77,7 @@ const EditTeamimage = () => {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch(`http://localhost:8080/image/list`, {
+      const response = await fetch(`https://render-host-rw27.onrender.com/image/list`, {
         method: "GET",
         credentials: "include",
       }).then((data) => data);
@@ -85,7 +85,7 @@ const EditTeamimage = () => {
       setTeamImg(json);
     })();
     (async () => {
-      const response = await fetch(`http://localhost:8080/image/${myteamId}`, {
+      const response = await fetch(`https://render-host-rw27.onrender.com/image/${myteamId}`, {
         method: "GET",
         credentials: "include",
       });
@@ -101,7 +101,7 @@ const EditTeamimage = () => {
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const imageUrl = myTeam?.imageUrl;
-    await fetch(`http://localhost:8080/info/team`, {
+    await fetch(`https://render-host-rw27.onrender.com/info/team`, {
       credentials: "include",
       method: "PATCH",
       headers: {

@@ -70,7 +70,7 @@ const EditNickname = () => {
   const navigate = useNavigate();
 
   const checkDuplicate = async () => {
-    const response = await fetch(`http://localhost:8080/check/${nickname}`, { credentials: "include", });
+    const response = await fetch(`https://render-host-rw27.onrender.com/check/${nickname}`, { credentials: "include", });
     const data = await response.json();
     setMsg(data.message);
     return data.available;
@@ -78,7 +78,7 @@ const EditNickname = () => {
 
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await fetch(`http://localhost:8080/info`, {
+    await fetch(`https://render-host-rw27.onrender.com/info`, {
       credentials: "include",
       method: "PATCH",
       headers: {

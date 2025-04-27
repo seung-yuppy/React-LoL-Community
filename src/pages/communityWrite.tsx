@@ -66,7 +66,7 @@ const CommunityWrite = () => {
     category: string
   ) => {
     e.preventDefault();
-    await fetch(`http://localhost:8080/community`, {
+    await fetch(`https://render-host-rw27.onrender.com/community`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -84,7 +84,7 @@ const CommunityWrite = () => {
           const formData = new FormData();
           loader.file.then((file: File) => {
             formData.append("upload", file);
-            fetch(`http://localhost:8080/image/upload`, {
+            fetch(`https://render-host-rw27.onrender.com/image/upload`, {
               method: "POST",
               body: formData,
               credentials: "include",

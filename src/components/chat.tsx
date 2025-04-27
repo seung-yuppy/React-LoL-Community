@@ -134,7 +134,7 @@ const Chat = () => {
 
     const connectWebSocket = () => {
       if (isLogin && !client) {
-        const socket = new SockJS(`http://localhost:8080/ws`, { Credential: "include" });
+        const socket = new SockJS(`https://render-host-rw27.onrender.com/ws`, { Credential: "include" });
         stompClient = new Client({
           webSocketFactory: () => socket,
           reconnectDelay: 3000,

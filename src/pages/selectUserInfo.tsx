@@ -109,7 +109,7 @@ function SelectUserInfo() {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch(`http://localhost:8080/image/list`, {
+      const response = await fetch(`https://render-host-rw27.onrender.com/image/list`, {
         method: "GET",
         credentials: "include",
       }).then((data) => data);
@@ -118,7 +118,7 @@ function SelectUserInfo() {
     })();
 
     (async () => {
-      const response = await fetch(`http://localhost:8080/image/${myteamId}`, {
+      const response = await fetch(`https://render-host-rw27.onrender.com/image/${myteamId}`, {
         method: "GET",
         credentials: "include",
       });
@@ -131,7 +131,7 @@ function SelectUserInfo() {
     event.preventDefault();
     try {
       const imageUrl = myTeam?.imageUrl;
-      const response = await fetch(`http://localhost:8080/check/${nickname}`, {
+      const response = await fetch(`https://render-host-rw27.onrender.com/check/${nickname}`, {
         method: "GET",
         credentials: "include",
       });
@@ -139,7 +139,7 @@ function SelectUserInfo() {
       if (status === 409) {
         setShowDupModal(true);
       } else if (status === 200) {
-        await fetch(`http://localhost:8080/info`, {
+        await fetch(`https://render-host-rw27.onrender.com/info`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

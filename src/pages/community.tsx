@@ -235,7 +235,7 @@ const Community = () => {
 
     useEffect(() => {
         // WebSocket 엔드포인트 설정 (Spring Boot WebSocket 경로)
-        const socket = new SockJS("http://localhost:8080/ws");
+        const socket = new SockJS("https://render-host-rw27.onrender.com/ws");
         const stompClient = new Client({
             webSocketFactory: () => socket,
             reconnectDelay: 5000, // 자동 재연결
@@ -265,7 +265,7 @@ const Community = () => {
         e.preventDefault();
         try {
             await fetch(
-                `http://localhost:8080/community/${communityId}`,
+                `https://render-host-rw27.onrender.com/community/${communityId}`,
                 {
                     method: "DELETE",
                     credentials: "include",
@@ -286,7 +286,7 @@ const Community = () => {
                 openModal("alertLogin")
                 setContent("");
             } else if (userInfo) {
-                await fetch(`http://localhost:8080/${communityId}/comment`, {
+                await fetch(`https://render-host-rw27.onrender.com/${communityId}/comment`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -320,7 +320,7 @@ const Community = () => {
                 openModal("alertLogin")
                 setReply("");
             } else if (userInfo) {
-                await fetch(`http://localhost:8080/${communityId}/${parentId}/comment`, {
+                await fetch(`https://render-host-rw27.onrender.com/${communityId}/${parentId}/comment`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -355,7 +355,7 @@ const Community = () => {
     const editComment = async (e: React.FormEvent<HTMLFormElement>, comment: IComment) => {
         e.preventDefault();
         try {
-            await fetch(`http://localhost:8080/${parentId}/comment`, {
+            await fetch(`https://render-host-rw27.onrender.com/${parentId}/comment`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -384,7 +384,7 @@ const Community = () => {
     const deleteComment = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         try {
-            await fetch(`http://localhost:8080/${parentId}/comment`, {
+            await fetch(`https://render-host-rw27.onrender.com/${parentId}/comment`, {
                 method: "DELETE",
                 credentials: "include",
             });
@@ -398,7 +398,7 @@ const Community = () => {
     // 댓글 좋아요
     const goodComment = async (comment: IComment) => {
         try {
-            const response = await fetch(`http://localhost:8080/${comment.id}/like?likeType=like`, {
+            const response = await fetch(`https://render-host-rw27.onrender.com/${comment.id}/like?likeType=like`, {
                 method: "POST",
                 credentials: "include"
             })
@@ -417,7 +417,7 @@ const Community = () => {
     // 댓글 싫어요
     const hateComment = async (comment: IComment) => {
         try {
-            const response = await fetch(`http://localhost:8080/${comment.id}/like?likeType=dislike`, {
+            const response = await fetch(`https://render-host-rw27.onrender.com/${comment.id}/like?likeType=dislike`, {
                 method: "POST",
                 credentials: "include"
             })

@@ -1,7 +1,7 @@
 // 커뮤니티 좋아요 누르기
 const fetchAddLikeCommunityList = async (id: number) => {
   try {
-    const response = await fetch(`http://localhost:8080/community/${id}/like`, {
+    const response = await fetch(`https://render-host-rw27.onrender.com/community/${id}/like`, {
       method: "POST",
       credentials: "include",
     });

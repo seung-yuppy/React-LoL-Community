@@ -44,7 +44,7 @@ const Header = () => {
   useEffect(() => {
     const fetchAuth = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/auth/me`, {
+        const response = await fetch(`https://render-host-rw27.onrender.com/auth/me`, {
           method: "GET",
           credentials: "include",
         });
@@ -63,7 +63,7 @@ const Header = () => {
 
   // 로그아웃
   const onLogout = async () => {
-    await fetch(`http://localhost:8080/logout`, {
+    await fetch(`https://render-host-rw27.onrender.com/logout`, {
       method: "POST",
       credentials: "include",
     });

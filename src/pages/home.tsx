@@ -52,7 +52,7 @@ const Home = () => {
         if (isLogin) {
             const fetchUserInfo = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8080/info`, {
+                    const response = await fetch(`https://render-host-rw27.onrender.com/info`, {
                         method: "GET",
                         credentials: "include",
                     });

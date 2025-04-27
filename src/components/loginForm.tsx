@@ -26,7 +26,7 @@ const LoginForm = () => {
     // 유저 정보를 가져오는 함수
     const fetchUserInfo = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/info`, {
+            const response = await fetch(`https://render-host-rw27.onrender.com/info`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -42,7 +42,7 @@ const LoginForm = () => {
     const googleOnclick = async () => {
         try {
             const currentUrl = window.location.href;
-            window.location.href = `http://localhost:8080/oauth2/authorization/google?state=${encodeURIComponent(currentUrl)}`;
+            window.location.href = `https://render-host-rw27.onrender.com/oauth2/authorization/google?state=${encodeURIComponent(currentUrl)}`;
             login();
             await fetchUserInfo();
         } catch (error) {
@@ -54,7 +54,7 @@ const LoginForm = () => {
     const naverOnclick = async () => {
         try {
             const currentUrl = window.location.href;
-            window.location.href = `http://localhost:8080/oauth2/authorization/naver?state=${encodeURIComponent(currentUrl)}`;
+            window.location.href = `https://render-host-rw27.onrender.com/oauth2/authorization/naver?state=${encodeURIComponent(currentUrl)}`;
             login();
             await fetchUserInfo();
         } catch (error) {
@@ -66,7 +66,7 @@ const LoginForm = () => {
     const kakaoOnclick = async () => {
         try {
             const currentUrl = window.location.href;
-            window.location.href = `http://localhost:8080/oauth2/authorization/kakao?state=${encodeURIComponent(currentUrl)}`;
+            window.location.href = `https://render-host-rw27.onrender.com/oauth2/authorization/kakao?state=${encodeURIComponent(currentUrl)}`;
             login();
             await fetchUserInfo();
         } catch (error) {

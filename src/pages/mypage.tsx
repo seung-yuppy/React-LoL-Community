@@ -150,7 +150,7 @@ const MyPage = () => {
     // 유저 기본 정보 불러오기
     const fetchUser = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/mypage`, {
+        const response = await fetch(`https://render-host-rw27.onrender.com/mypage`, {
           method: "GET",
           credentials: "include",
         });
@@ -166,7 +166,7 @@ const MyPage = () => {
     // 유저 상세 정보 불러오기(닉네임 생성 & myTeam 생성 이후)
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/info`, {
+        const response = await fetch(`https://render-host-rw27.onrender.com/info`, {
           method: "GET",
           credentials: "include",
         });
@@ -180,7 +180,7 @@ const MyPage = () => {
     // 내가 쓴 글 불러오기
     const fetchMyCommunity = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/community/my`, {
+        const response = await fetch(`https://render-host-rw27.onrender.com/community/my`, {
           method: "GET",
           credentials: "include",
         })
@@ -193,7 +193,7 @@ const MyPage = () => {
     // 내가 쓴 댓글 목록
     const fetchMyComment = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/comment/my`, {
+        const response = await fetch(`https://render-host-rw27.onrender.com/comment/my`, {
           method: "GET",
           credentials: "include",
         })
@@ -206,7 +206,7 @@ const MyPage = () => {
     // 내가 추천한 글 목록
     const fetchMyLikeContent = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/community/likes`, {
+        const response = await fetch(`https://render-host-rw27.onrender.com/community/likes`, {
           method: "GET",
           credentials: "include",
         })
@@ -230,11 +230,11 @@ const MyPage = () => {
 
   // 탈퇴 처리(닉네임&myteam 생성 유저 전용)
   const handleDelete = async () => {
-    await fetch(`http://localhost:8080/info`, {
+    await fetch(`https://render-host-rw27.onrender.com/info`, {
       method: "DELETE",
       credentials: "include",
     });
-    await fetch(`http://localhost:8080/logout`, {
+    await fetch(`https://render-host-rw27.onrender.com/logout`, {
       method: "POST",
       credentials: "include",
     });
