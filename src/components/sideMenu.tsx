@@ -66,19 +66,17 @@ const SideMenu = () => {
     };
 
     // 로그아웃
-    const onLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
+    const onLogout = async () => {
         try {
             await fetch(`https://render-host-rw27.onrender.com/logout`, {
                 method: "POST",
                 credentials: "include",
             });
             logout();
-            navigate("/0");
+            openModal("logout");
         } catch (error) {
             console.error("로그아웃 오류", error);
         }
-
     };
 
     return (
@@ -111,6 +109,12 @@ const SideMenu = () => {
             {isOpen("loginForm") &&
                 <Modal onClose={() => closeModal("loginForm")}>
                     <LoginForm />
+                </Modal>
+            }
+
+            {isOpen("logout") &&
+                <Modal onClose={() => { closeModal("logout"); navigate("/0") }}>
+                    <InfoTitle>로그아웃이 완료되었습니다.</InfoTitle>
                 </Modal>
             }
         </>

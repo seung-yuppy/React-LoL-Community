@@ -36,6 +36,11 @@ const HomeTitle = styled.div`
   background-size: cover;
 `;
 
+const InfoTitle = styled.h2`
+  font-size: 1.2rem;
+  font-weight: bold;
+`;
+
 const Header = () => {
   const navigate = useNavigate();
   const { isLogin, login, logout } = useAuth();
@@ -63,12 +68,16 @@ const Header = () => {
 
   // 로그아웃
   const onLogout = async () => {
-    await fetch(`https://render-host-rw27.onrender.com/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    navigate("/0");
-    logout();
+    try {
+      await fetch(`https://render-host-rw27.onrender.com/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+      logout();
+      openModal("logout");
+    } catch (error) {
+      console.error("로그아웃 오류", error);
+    }
   };
 
   return (
@@ -95,6 +104,11 @@ const Header = () => {
       {isOpen("loginForm") &&
         <Modal onClose={() => closeModal("loginForm")}>
           <LoginForm />
+        </Modal>
+      }
+      {isOpen("logout") &&
+        <Modal onClose={() => { closeModal("logout"); navigate("/0") }}>
+          <InfoTitle>로그아웃이 완료되었습니다.</InfoTitle>
         </Modal>
       }
     </>
