@@ -199,7 +199,7 @@ function SelectUserInfo() {
       }
       {
         showComModal &&
-        <Modal onClose={() => { setShowComModal(false); navigate("/mypage"); window.location.reload(); }}>
+        <Modal onClose={() => { setShowComModal(false); navigate("/0"); window.location.reload(); }}>
           <Title>{nickname}님 가입을 축하드립니다!</Title>
         </Modal>
       }

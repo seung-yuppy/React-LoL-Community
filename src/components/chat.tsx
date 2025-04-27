@@ -4,6 +4,8 @@ import { Client } from "@stomp/stompjs";
 import styled from "styled-components";
 import Modal from "./modal";
 import useAuth from "../stores/useAuth";
+import useModal from "../hooks/useModal";
+import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
   display: flex;
@@ -126,8 +128,9 @@ const Chat = () => {
     imageUrl: string | undefined; nickname: string, content: string
   }[]>([]);
   const [message, setMessage] = useState<string>("");
-  const [showAlertModal, setShowAlertModal] = useState<boolean>(false); // 로그인 경고창 모달 상태 관리
   const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const { isOpen, openModal, closeModal } = useModal();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let stompClient: Client | null = null;
@@ -182,10 +185,6 @@ const Chat = () => {
         behavior: "smooth"
       });
     }
-    // if (messageEndRef.current) {
-    //   messageEndRef.current.scrollTop = messageEndRef.current.scrollHeight;
-    // }
-    // messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
@@ -199,7 +198,7 @@ const Chat = () => {
         setMessage("");
       } else {
         console.error("🚨 STOMP 연결이 안 되어 있음!");
-        setShowAlertModal(true);
+        openModal("noLogin");
         setMessage("");
       }
     }
@@ -247,11 +246,11 @@ const Chat = () => {
       </Wrapper>
 
       {/* 모달 관리 */}
-      {showAlertModal &&
-        <Modal onClose={() => setShowAlertModal(false)}>
-          <TableTitle>로그인 후 이용해주세요.</TableTitle>
+      {isOpen("noLogin") && (
+        <Modal onClose={() => { closeModal("noLogin"); navigate("/mypage/userinfo") }}>
+          <TableTitle>닉네임을 정해주세요.</TableTitle>
         </Modal>
-      }
+      )}
     </>
 
   );
