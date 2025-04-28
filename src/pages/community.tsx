@@ -62,6 +62,14 @@ const Dynamiccontent = styled.div`
     border-top: 1px solid #333;
     /* gap: 1rem; */
 
+    iframe {
+        max-width: 100%;
+        width: 100%;
+        height: 315px;
+        border: none;
+        margin: 1rem 0;
+    }
+
     figure {
         padding: 0;
         margin: 0;
