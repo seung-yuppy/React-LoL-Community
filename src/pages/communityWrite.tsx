@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../components/modal";
+import { MediaEmbed } from "ckeditor5";
 // import Plugin from "@ckeditor/ckeditor5-core/src/plugin";
 
 const Wrapper = styled.div`
@@ -141,7 +142,7 @@ const CommunityWrite = () => {
             config={{
               licenseKey: "GPL",
               placeholder: "내용을 입력하세요.",
-              extraPlugins: [uploadPlugin],
+              extraPlugins: [uploadPlugin, MediaEmbed],
               mediaEmbed: {
                 previewsInData: true, // HTML 데이터 안에 iframe으로 저장되게 함
               },

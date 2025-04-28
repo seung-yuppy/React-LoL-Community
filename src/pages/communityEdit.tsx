@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Modal from "../components/modal";
+import { MediaEmbed } from "ckeditor5";
 
 const Wrapper = styled.div`
     display: flex;
@@ -157,7 +158,10 @@ const CommunityEdit = () => {
                         editor={ClassicEditor}
                         config={{
                             licenseKey: "GPL",
-                            extraPlugins: [uploadPlugin],
+                            extraPlugins: [uploadPlugin, MediaEmbed],
+                            mediaEmbed: {
+                                previewsInData: true, // HTML 데이터 안에 iframe으로 저장되게 함
+                            },
                         }}
                         data={content}
                         onChange={(_, editor) => {
