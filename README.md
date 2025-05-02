@@ -46,8 +46,22 @@
 
 댓글의 좋아요와 싫어요를 확인함으로 글의 전반적인 여론을 확인하기 쉽게 만들었습니다.
 
-#### 6.
 
 ### 📍 주요 기능 실행화면
 
+#### 메인화면
+
+![메인화면](https://github.com/user-attachments/assets/3fe960b3-7d4f-4032-8fb1-49f0ba1f8cc2)
+
+#### 카테고리화면
+![카테고리](https://github.com/user-attachments/assets/4bb00427-1912-4c59-9b9b-94c71232bb43)
+
+#### 채팅창
+![창채팅](https://github.com/user-attachments/assets/6047a3e5-a2f2-4d45-855c-2fb37510447d)
+
+#### 페이징
+![튼다음버](https://github.com/user-attachments/assets/06e67719-63b5-4703-b671-f951b99e5275)
+
+
 ### 📍 시연 영상
+https://www.youtube.com/watch?v=1jigB8RXR2E
